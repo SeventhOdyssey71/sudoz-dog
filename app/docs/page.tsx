@@ -1,275 +1,119 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Zap, Flame, Coins, Shield, TrendingUp, Users } from "lucide-react"
 
-export default function Docs() {
+export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Moving animated background blurs */}
+    <div className="min-h-screen bg-black text-gray-300 relative overflow-hidden">
+      {/* Background blur elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-400/8 rounded-full blur-3xl moving-blur-1"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-400/6 rounded-full blur-3xl moving-blur-2"></div>
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-green-300/5 rounded-full blur-3xl moving-blur-3"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-400/10 rounded-full blur-3xl moving-blur-1"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-400/8 rounded-full blur-3xl moving-blur-2"></div>
       </div>
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between p-6">
+      <header className="relative z-10 flex items-center justify-between p-6 border-b border-gray-800">
         <div className="flex items-center space-x-4">
           <Link href="/">
             <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white tracking-wide">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              BACK
+              BACK TO HOME
             </Button>
           </Link>
-          <div className="text-2xl font-bold text-green-400 tracking-wider">DOCUMENTATION</div>
         </div>
+        <div className="text-xl font-bold text-green-400 tracking-wider">DOCUMENTATION</div>
       </header>
 
-      <main className="relative z-10 container mx-auto px-6 py-8 max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4 tracking-wider">SUDOZ EVOLUTION LAB GUIDE</h1>
-          <p className="text-xl text-gray-300 tracking-wide">
-            Learn how to evolve your Sudoz artifacts and unlock their full potential.
-          </p>
-        </div>
+      <main className="relative z-10 container mx-auto px-6 py-12 md:py-20 max-w-3xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center tracking-wider">📜 SUDOZ Project – User Participation Agreement</h1>
+        
+        <p className="mb-6 leading-relaxed">
+          By participating in the SUDOZ ecosystem — including interaction with Artifacts, Dog NFTs, and related experiences — you (“the User”) acknowledge and agree to the following terms:
+        </p>
+        <hr className="border-gray-700 my-8" />
 
         <div className="space-y-8">
-          {/* Getting Started */}
-          <Card className="bg-gray-900/80 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center tracking-wider">
-                <Users className="w-5 h-5 mr-2 text-green-400" />
-                GETTING STARTED
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 space-y-4">
-              <p>
-                Welcome to the Sudoz Evolution Lab! This experimental facility allows you to upgrade your Sudoz NFTs and
-                unlock new attributes, increased rarity, and enhanced value.
-              </p>
-              <ol className="list-decimal list-inside space-y-2 ml-4">
-                <li>Connect your wallet to access your Sudoz collection</li>
-                <li>Navigate to the Evolve Lab</li>
-                <li>Select an artifact from your collection</li>
-                <li>Choose to Level Up or Burn your artifact</li>
-              </ol>
-            </CardContent>
-          </Card>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">1. Imaginative Experience</h2>
+            <p className="leading-relaxed">
+              The SUDOZ project is entirely fictional. All narratives involving animals, including dogs or experiments, are part of a creative storyline. These depictions do not reflect real-world actions, beliefs, or intentions. No animals were harmed, nor is harm promoted in any way through this project.
+            </p>
+          </div>
 
-          {/* Level Up System */}
-          <Card className="bg-gray-900/80 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center tracking-wider">
-                <Zap className="w-5 h-5 mr-2 text-green-400" />
-                LEVEL UP SYSTEM
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 space-y-4">
-              <p>The Level Up system allows you to enhance your Sudoz artifacts through 10 progressive levels.</p>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">2. Experimental Gameplay</h2>
+            <p className="leading-relaxed">
+              SUDOZ is designed as a gamified and experimental NFT ecosystem. Features such as “leveling up,” “burning,” and “evolution” are metaphorical mechanics for user interaction and engagement. Participation in these features is entirely optional.
+            </p>
+          </div>
 
-              <div className="bg-gray-800/50 p-4 rounded-lg">
-                <h4 className="text-white font-bold mb-2 tracking-wide">HOW IT WORKS:</h4>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Each level up costs exactly 1 SUI</li>
-                  <li>Maximum level is 10 for all artifacts</li>
-                  <li>Each upgrade increases rarity and value</li>
-                  <li>Image and metadata update with each level</li>
-                  <li>New attributes may be unlocked</li>
-                </ul>
-              </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">3. Use of Funds</h2>
+            <p className="leading-relaxed">
+              Any SUI or cryptocurrency used to interact with the project (e.g., level-ups, transactions) is spent voluntarily. These actions are initiated by the user and are non-refundable. The project creators do not hold responsibility for individual financial decisions.
+            </p>
+          </div>
 
-           
-            </CardContent>
-          </Card>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">4. No Financial Guarantees</h2>
+            <p className="leading-relaxed">
+              SUDOZ makes no promises or guarantees regarding the financial value of any NFTs, including Dog NFTs or Artifacts. The floor price, resale value, and market performance are determined solely by the open market and community consensus.
+            </p>
+          </div>
 
-          {/* Burn Mechanism */}
-          <Card className="bg-gray-900/80 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center tracking-wider">
-                <Flame className="w-5 h-5 mr-2 text-red-400" />
-                BURN MECHANISM
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 space-y-4">
-              <p>The Burn feature is designed for future utility mechanisms and special events.</p>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">5. Community-Driven Ecosystem</h2>
+            <p className="leading-relaxed">
+              All progression, decisions, and developments in the SUDOZ universe are community-driven. No central authority dictates future price movements or rewards. You acknowledge that you are engaging with the ecosystem at your own discretion.
+            </p>
+          </div>
 
-              <div className="bg-red-400/10 border border-red-400/30 p-4 rounded-lg">
-                <h4 className="text-red-400 font-bold mb-2 tracking-wide">⚠️ IMPORTANT WARNING</h4>
-                <p className="text-sm">
-                  Burning an artifact is permanent and irreversible. This action will completely remove the NFT from
-                  your wallet and the blockchain. Only use this feature when participating in official burn events or
-                  mechanisms.
-                </p>
-              </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">6. Art Usage & Attribution</h2>
+            <p className="leading-relaxed">
+              <ul>
+                <li><strong>Artifacts Collection:</strong> All visuals are AI-generated and used purely for storytelling and aesthetic purposes.</li>
+                <li><strong>Dog NFT Collection:</strong> Artwork is created by human artists commissioned for the project.</li>
+              </ul>
+              By engaging, you accept that some visual content may use generative AI tools and is not intended to mislead.
+            </p>
+          </div>
 
-              <div className="bg-gray-800/50 p-4 rounded-lg">
-                <h4 className="text-white font-bold mb-2 tracking-wide">FUTURE BURN UTILITIES:</h4>
-                <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Special event participation</li>
-                  <li>Exclusive reward claiming</li>
-                  <li>Collection evolution mechanics</li>
-                  
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">7. No Promises of Utility</h2>
+            <p className="leading-relaxed">
+              This project is not a financial product or a guaranteed reward system. It does not offer staking, passive income, or future token airdrops unless explicitly announced. All features are subject to change based on development and community feedback.
+            </p>
+          </div>
 
-          {/* Economics */}
-          <Card className="bg-gray-900/80 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center tracking-wider">
-                <Coins className="w-5 h-5 mr-2 text-yellow-400" />
-                ECONOMICS & COSTS
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 space-y-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-white font-bold mb-3 tracking-wide">LEVEL UP COSTS</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>PER LEVEL UP:</span>
-                      <span className="text-green-400 font-bold tracking-wide">1 SUI</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>LEVEL 1 → 10:</span>
-                      <span className="text-green-400 font-bold tracking-wide">9 SUI TOTAL</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>GAS FEES:</span>
-                      <span className="text-gray-400">~0.001 SUI</span>
-                    </div>
-                  </div>
-                </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">8. Assumption of Risk</h2>
+            <p className="leading-relaxed">
+              By participating, you understand and accept that all interactions — including purchases, upgrades, burns, and marketplace trading — involve inherent risk. You are responsible for your own actions and choices within the SUDOZ ecosystem.
+            </p>
+          </div>
 
-                <div>
-                  <h4 className="text-white font-bold mb-3 tracking-wide">VALUE INCREASES</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>PER LEVEL:</span>
-                      <span className="text-cyan-400 font-bold tracking-wide">+2 VALUE</span>
-                    </div>
-                    <div className="flex justify-between">
-                    
-            </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Technical Details */}
-          <Card className="bg-gray-900/80 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center tracking-wider">
-                <Shield className="w-5 h-5 mr-2 text-cyan-400" />
-                TECHNICAL DETAILS
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 space-y-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-white font-bold mb-3 tracking-wide">BLOCKCHAIN</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Built on Sui Network</li>
-                    <li>• Smart contract verified</li>
-                    <li>• Immutable upgrade logic</li>
-                    <li>• Decentralized metadata</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="text-white font-bold mb-3 tracking-wide">SECURITY</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Audited smart contracts</li>
-                    <li>• Non-custodial design</li>
-                    <li>• Transparent operations</li>
-                    <li>• Community verified</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="bg-gray-800/50 p-4 rounded-lg">
-                <h4 className="text-white font-bold mb-2 tracking-wide">COLLECTION DETAILS:</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <div className="text-gray-400 tracking-wide">TOTAL SUPPLY</div>
-                    <div className="font-bold tracking-wider">5,555 NFTS</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-400 tracking-wide">MAX LEVEL</div>
-                    <div className="font-bold tracking-wider">LEVEL 10</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-400 tracking-wide">UPGRADE COST</div>
-                    <div className="font-bold tracking-wider">1 SUI</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-400 tracking-wide">NETWORK</div>
-                    <div className="font-bold tracking-wider">SUI</div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* FAQ */}
-          <Card className="bg-gray-900/80 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center tracking-wider">
-                <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
-                FREQUENTLY ASKED QUESTIONS
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 space-y-6">
-           
-
-              <div>
-                <h4 className="text-white font-bold mb-2 tracking-wide">WHAT HAPPENS IF I REACH MAX LEVEL?</h4>
-                <p className="text-sm">
-                  Level 10 artifacts gain special "Mythic" status with unique visual effects and exclusive traits that
-                  cannot be obtained otherwise.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-bold mb-2 tracking-wide">ARE THERE ANY RISKS?</h4>
-                <p className="text-sm">
-                  Level ups are safe and guaranteed. The only risk is with the Burn function, which permanently destroys
-                  the NFT.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-bold mb-2 tracking-wide">CAN I TRADE UPGRADED ARTIFACTS?</h4>
-                <p className="text-sm">
-                  Yes! Upgraded artifacts can be freely traded on any NFT marketplace that supports Sui NFTs. Higher
-                  level artifacts typically have increased market value.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center py-12">
-          <h2 className="text-3xl font-bold text-white mb-4 tracking-wider">READY TO EVOLVE?</h2>
-          <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Enter the Evolution Lab and start upgrading your Sudoz artifacts today. Unlock new levels of rarity and
-            value in our experimental sci-fi environment.
-          </p>
-          <Link href="/evolve-lab">
-            <Button
-              size="lg"
-              className="bg-green-400 hover:bg-green-500 text-black px-8 py-4 rounded-xl font-bold tracking-wider"
-            >
-              <Zap className="w-5 h-5 mr-2" />
-              ENTER EVOLUTION LAB
-            </Button>
-          </Link>
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">9. Final Agreement</h2>
+            <p className="leading-relaxed">
+              By continuing to engage with the SUDOZ project, you acknowledge that:
+            </p>
+            <ul className="list-disc list-inside ml-4">
+              <li>You have read and understood this agreement.</li>
+              <li>You voluntarily accept all terms without coercion or expectation of return.</li>
+              <li>You are solely responsible for your decisions and interactions within the ecosystem.</li>
+            </ul>
+          </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 text-center py-8 text-gray-400 border-t border-gray-800">
+        <p className="tracking-wide text-sm">&copy; 2025 SUDOZ GENETIC RESEARCH LABORATORY. ALL RIGHTS RESERVED.</p>
+      </footer>
     </div>
   )
 }
