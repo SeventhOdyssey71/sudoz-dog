@@ -1,18 +1,39 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ArrowLeft, Wallet, Zap, Flame, Dna, Scan, Activity, AlertTriangle, CheckCircle, ArrowUpCircle } from "lucide-react"
-import Image from "next/image"
-import WalletConnect from "../components/WalletConnect"
-import { useCurrentAccount } from "@mysten/dapp-kit"
-import { useSuiClient } from '@mysten/dapp-kit'
-import { SuiClient } from '@mysten/sui.js/client'
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AlertTriangle, ArrowLeft, ArrowRight, Beaker, CheckCircle, Dna, Eye, Flame, FlaskConical, Scan, Activity, ArrowUpCircle, Wallet, Zap, Loader2, Sparkles } from "lucide-react";
+import Image from "next/image";
+import WalletConnect from "../components/WalletConnect";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useSuiClient } from "@mysten/dapp-kit";
+import { SuiClient } from "@mysten/sui.js/client";
+
+// Define interfaces for NFT data structure
+interface NFTDisplay {
+  name?: string;
+  description?: string;
+  image_url?: string;
+  image?: string; // Support both image and image_url properties
+}
+
+interface NFTData {
+  objectId?: string;
+  display?: NFTDisplay;
+  content?: any;
+  kioskId?: string;
+  isInKiosk?: boolean;
+  type?: string;
+}
+
+interface NFTObject {
+  data?: NFTData;
+}
 
 export default function EvolveLab() {
   const account = useCurrentAccount();
@@ -23,52 +44,224 @@ export default function EvolveLab() {
   const [pendingMutations, setPendingMutations] = useState(0)
 
   const suiClient = useSuiClient();
-  const [artifactNFT, setArtifactNFT] = useState<any>(null);
+  const [artifactNFT, setArtifactNFT] = useState<NFTObject | null>(null);
+  const [artifactNFTs, setArtifactNFTs] = useState<NFTObject[]>([]);
   const [isFetchingNFT, setIsFetchingNFT] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
+  // Target NFT type to filter for - using the same values from the test script
   const targetNFTType = "0xd44eeba23c7256b426113b5b645638f00abc0f27ec224f7286be6f9853df8a5a::_sudoz_artifacts::Nft";
+  const targetPackageId = "0xd44eeba23c7256b426113b5b645638f00abc0f27ec224f7286be6f9853df8a5a";
+  
+  // Kiosk-related constants
+  const KIOSK_MODULE = "0x2::kiosk";
+  const KIOSK_TYPE = `${KIOSK_MODULE}::Kiosk`;
+  const KIOSK_OWNER_CAP_TYPE = `${KIOSK_MODULE}::KioskOwnerCap`;
+  const KIOSK_ITEM_TYPE = `${KIOSK_MODULE}::Item`;
+  const LISTING_TYPE = `${KIOSK_MODULE}::Listing`;
+  
+  // BlockVision API Key
+  const BLOCKVISION_API_KEY = '2vmcIQeMF5JdhEXyuyQ8n79UNoO';
+
+  // Enhanced function to fetch NFT data for a wallet address using BlockVision API
+  // This includes both directly owned NFTs and NFTs stored in kiosks
+  const fetchNFTDataForWallet = async (walletAddress: string): Promise<NFTObject[]> => {
+    console.log('Fetching NFTs for wallet:', walletAddress);
+    console.log('Target NFT type:', targetNFTType);
+    console.log('Target package ID:', targetPackageId);
+    
+    try {
+      // First try with BlockVision API to get kiosk NFTs
+      console.log(`Fetching NFTs for wallet ${walletAddress} using BlockVision API...`);
+      
+      // Initialize array to hold NFT objects from all sources
+      let nftObjects: NFTObject[] = [];
+      
+      try {
+        // Construct URL with parameters
+        const url = new URL('https://api.blockvision.org/v2/sui/account/nfts');
+        url.searchParams.append('account', walletAddress);
+        url.searchParams.append('type', 'kiosk'); // Specifically request kiosk NFTs
+        url.searchParams.append('pageIndex', '1');
+        url.searchParams.append('pageSize', '50');
+        
+        const headers = {
+          'accept': 'application/json',
+          'x-api-key': BLOCKVISION_API_KEY
+        };
+        
+        const response = await fetch(url.toString(), { headers });
+        
+        if (!response.ok) {
+          throw new Error(`BlockVision API error: ${response.status} ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.code !== 200) {
+          throw new Error(`BlockVision API error: ${result.message}`);
+        }
+        
+        const nfts = result.result.data || [];
+        console.log(`Found ${nfts.length} NFTs in kiosks via BlockVision API`);
+        
+        // Filter for SUDOZ NFTs
+        const sudozNfts = nfts.filter((nft: any) => 
+          nft.collection && (
+            nft.collection === targetNFTType ||
+            nft.collection.toLowerCase().includes('sudoz') ||
+            nft.collection.toLowerCase().includes('_sudoz_')
+          )
+        );
+        
+        console.log(`Found ${sudozNfts.length} SUDOZ NFTs in kiosks`);
+        
+        // Convert to NFTObject format
+        nftObjects = sudozNfts.map((nft: any) => ({
+          data: {
+            objectId: nft.objectId,
+            type: nft.collection,
+            display: {
+              name: nft.name || 'Sudoz Artifacts',
+              image_url: nft.image || '',
+              description: nft.description || ''
+            },
+            content: {
+              fields: {
+                name: nft.name || 'Sudoz Artifacts',
+                description: nft.description || ''
+              }
+            },
+            kioskId: nft.kioskId,
+            isInKiosk: true
+          }
+        }));
+      } catch (blockVisionError) {
+        console.error('Error fetching from BlockVision API:', blockVisionError);
+        // Continue with other methods if BlockVision fails
+      }
+      
+      // Also try with exact type match for directly owned NFTs
+      console.log('Fetching directly owned NFTs with exact type match...');
+      let directNFTs: NFTObject[] = [];
+      
+      try {
+        const ownedObjects = await suiClient.getOwnedObjects({
+          owner: walletAddress,
+          filter: { StructType: targetNFTType },
+          options: { showDisplay: true, showContent: true, showType: true },
+        });
+        
+        console.log(`Found ${ownedObjects.data?.length || 0} directly owned NFTs with exact type match`);
+        directNFTs = [...(ownedObjects.data || [])];
+      } catch (directFetchError) {
+        console.error('Error fetching directly owned NFTs:', directFetchError);
+      }
+      
+      // Try with fallback using package ID for more flexible matching if no exact matches found
+      if (directNFTs.length === 0) {
+        console.log('No exact matches found, trying with package ID...');
+        try {
+          const fallbackObjects = await suiClient.getOwnedObjects({
+            owner: walletAddress,
+            options: { showDisplay: true, showContent: true, showType: true },
+          });
+          
+          const filteredObjects = (fallbackObjects.data || []).filter((obj: NFTObject) => {
+            const objType = obj.data?.type;
+            return objType && (
+              objType === targetNFTType || 
+              objType.includes('_sudoz_artifacts::Nft') || 
+              objType.includes(targetPackageId)
+            );
+          });
+          
+          console.log(`Found ${filteredObjects.length} directly owned NFTs with package ID match`);
+          directNFTs = filteredObjects;
+        } catch (fallbackError) {
+          console.error('Error in fallback NFT search:', fallbackError);
+        }
+      }
+      
+      // Combine NFTs from BlockVision API and direct fetching
+      const allNFTs = [...nftObjects, ...directNFTs];
+      console.log(`Found a total of ${allNFTs.length} NFTs`);
+      
+      return allNFTs;
+    } catch (error) {
+      console.error("Error fetching NFT data:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     if (!account) {
+      console.log('No wallet connected');
+      setArtifactNFTs([]);
       setArtifactNFT(null);
       setIsFetchingNFT(false);
       setFetchError(null);
       return;
     }
 
-    const fetchNFT = async () => {
+    if (!suiClient) {
+      console.log('SuiClient not available');
+      setFetchError("Sui client not available. Please try again.");
+      return;
+    }
+
+    console.log('Wallet connected:', account.address);
+    console.log('SuiClient available:', !!suiClient);
+
+    const fetchNFTs = async () => {
       setIsFetchingNFT(true);
       setFetchError(null);
       try {
-        const ownedObjects = await suiClient.getOwnedObjects({
-          owner: account.address,
-          filter: {
-            StructType: "0xd44eeba23c7256b426113b5b645638f00abc0f27ec224f7286be6f9853df8a5a::_sudoz_artifacts::Nft",
-          },
-          options: {
-            showDisplay: true,
-            showContent: true,
-          },
-        });
-
-        if (ownedObjects.data.length > 0) {
-          // Assuming you want to display the first one found
-          setArtifactNFT(ownedObjects.data[0]);
+        console.log('Starting NFT fetch for wallet:', account.address);
+        
+        // Use the enhanced fetchNFTDataForWallet function that includes BlockVision API
+        console.log('Using enhanced NFT fetching with BlockVision API integration...');
+        const nfts = await fetchNFTDataForWallet(account.address);
+        
+        console.log('NFT fetch complete');
+        console.log(`Found a total of ${nfts.length} SUDOZ NFTs`);
+        
+        // Log detailed information about the NFTs found
+        if (nfts.length > 0) {
+          console.log('First NFT details:');
+          console.log('- Object ID:', nfts[0].data?.objectId);
+          console.log('- Type:', nfts[0].data?.type);
+          console.log('- Name:', nfts[0].data?.display?.name);
+          console.log('- In Kiosk:', nfts[0].data?.isInKiosk ? 'Yes' : 'No');
+          if (nfts[0].data?.isInKiosk) {
+            console.log('- Kiosk ID:', nfts[0].data?.kioskId);
+          }
+        }
+        
+        // Log the full structure of the first NFT for debugging
+        console.log('NFT data structure sample:', nfts.length > 0 ? JSON.stringify(nfts[0], null, 2) : 'No NFTs found');
+        
+        setArtifactNFTs(nfts);
+        
+        // Set the first NFT as selected if available
+        if (nfts.length > 0) {
+          console.log('Setting first NFT as selected');
+          setArtifactNFT(nfts[0]);
         } else {
+          console.log('No NFTs found to select');
           setArtifactNFT(null);
         }
-      } catch (e: any) {
-        console.error("Error fetching NFT:", e);
-        setFetchError("Failed to fetch NFT.");
+      } catch (e) {
+        console.error("Error fetching NFTs:", e);
+        setFetchError("Failed to fetch NFTs.");
+        setArtifactNFTs([]);
         setArtifactNFT(null);
       } finally {
         setIsFetchingNFT(false);
       }
     };
 
-    fetchNFT();
-
+    fetchNFTs();
   }, [account, suiClient]); // Refetch when account or client changes
 
   // Timer State and Logic
@@ -291,8 +484,99 @@ export default function EvolveLab() {
               <div className="text-center mb-8">
                 <h1 className="text-5xl font-bold text-white mb-4 tracking-wider">EVOLVE YOUR ARTIFACT</h1>
                 <p className="text-gray-300 text-lg tracking-wide">LEVEL PROTOCOL INTERFACE</p>
+                {isFetchingNFT && (
+                  <div className="mt-4 text-yellow-400">
+                    <div className="w-6 h-6 border-2 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mb-2 mx-auto"></div>
+                    <p>Scanning for SUDOZ artifacts...</p>
+                  </div>
+                )}
+                {!isFetchingNFT && fetchError && (
+                  <div className="mt-4 text-red-400">
+                    <AlertTriangle className="w-6 h-6 mx-auto mb-2" />
+                    <p>{fetchError}</p>
+                  </div>
+                )}
+                {!isFetchingNFT && !fetchError && artifactNFTs.length === 0 && (
+                  <div className="mt-4 text-yellow-400">
+                    <AlertTriangle className="w-6 h-6 mx-auto mb-2" />
+                    <p>No SUDOZ artifacts found in your wallet.</p>
+                  </div>
+                )}
               </div>
 
+              {/* Success message when NFTs are found */}
+              {!isFetchingNFT && !fetchError && artifactNFTs.length > 0 && (
+                <div className="mt-4 mb-6 text-green-400 text-center">
+                  <CheckCircle className="w-6 h-6 mx-auto mb-2" />
+                  <p>Found {artifactNFTs.length} {artifactNFTs.length === 1 ? 'artifact' : 'artifacts'} in your wallet</p>
+                </div>
+              )}
+              
+              {/* NFT Selection when multiple NFTs are available */}
+              {!isFetchingNFT && artifactNFTs.length > 1 && (
+                <div className="max-w-2xl mx-auto mb-8">
+                  <Card className="bg-gray-900/80 border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="text-cyan-400 tracking-wider flex items-center justify-center">
+                        <Eye className="w-5 h-5 mr-2" />
+                        SELECT YOUR ARTIFACT ({artifactNFTs.length} FOUND)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {artifactNFTs.map((nft: NFTObject, index: number) => {
+                          const isSelected = artifactNFT && nft.data?.objectId === artifactNFT.data?.objectId;
+                          const displayData = nft.data?.display || {};
+                          const name = displayData.name || `SUDOZ #${index + 1}`;
+                          
+                          return (
+                            <div 
+                              key={nft.data?.objectId || index}
+                              className={`p-2 rounded-lg cursor-pointer transition-all duration-200 ${isSelected ? 'bg-green-400/20 border border-green-400/40' : 'bg-gray-800/50 border border-gray-700 hover:border-green-400/20'}`}
+                              onClick={() => setArtifactNFT(nft)}
+                            >
+                               <div className="aspect-square bg-gray-800 rounded-md mb-2 flex items-center justify-center overflow-hidden relative">
+                                {/* Always use the IPFS image as placeholder */}
+                                <Image 
+                                  src="https://ipfs.io/ipfs/bafkreign7kxwqlqwybqbjotl7cn7budv6fsg67xrrf7xtudradwvoscok4"
+                                  alt={name} 
+                                  width={100} 
+                                  height={100}
+                                  className="object-cover w-full h-full" 
+                                />
+                                
+                                {/* Kiosk badge */}
+                                {nft.data?.isInKiosk && (
+                                  <div className="absolute top-1 right-1 bg-blue-500/80 rounded-md px-1.5 py-0.5 flex items-center space-x-1" 
+                                       title={`In Kiosk: ${nft.data?.kioskId?.substring(0, 8)}...`}>
+                                    <Wallet className="w-3 h-3 text-white" />
+                                    <span className="text-[10px] text-white font-bold">KIOSK</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="text-center">
+                                <p className="text-xs font-bold text-white truncate">{name}</p>
+                                <p className="text-xs text-gray-400 truncate">ID: {nft.data?.objectId?.substring(0, 8)}...</p>
+                                {nft.data?.isInKiosk && (
+                                  <p className="text-xs text-blue-400">In Kiosk</p>
+                                )}
+                              </div>
+                              
+                              {isSelected && (
+                                <div className="mt-1 bg-green-400 rounded-full w-4 h-4 mx-auto flex items-center justify-center">
+                                  <CheckCircle className="w-3 h-3 text-black" />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+              
               {/* Experimental Chamber and Genetic Upgrade Console */}
               <div className="max-w-2xl mx-auto space-y-8">
                 <Card className="bg-gray-900/80 border-gray-700">
@@ -424,8 +708,8 @@ export default function EvolveLab() {
                       <div className="flex flex-col items-center justify-center h-48">
                         <div className="relative w-40 h-40 md:w-48 md:h-48 mb-4">
                           <Image
-                            src={artifactNFT.data?.display?.data?.image_url || "/placeholder.svg"}
-                            alt={artifactNFT.data?.display?.data?.name || "Artifact NFT"}
+                            src="https://ipfs.io/ipfs/bafkreign7kxwqlqwybqbjotl7cn7budv6fsg67xrrf7xtudradwvoscok4"
+                            alt={artifactNFT.data?.display?.name || "Artifact NFT"}
                             fill
                             className="object-contain"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
