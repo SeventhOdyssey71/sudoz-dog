@@ -193,15 +193,15 @@ export default function HomePage() {
                 <div className="text-xs md:text-sm text-gray-400 tracking-wider">TOTAL SPECIMENS</div>
               </Card>
               <Card className="bg-gray-900/80 border-gray-700 text-center p-3 md:p-6">
-                <div className="text-2xl md:text-4xl font-bold text-cyan-400 tracking-wider mb-1 md:mb-2">2,847</div>
+                <div className="text-2xl md:text-4xl font-bold text-cyan-400 tracking-wider mb-1 md:mb-2">?</div>
                 <div className="text-xs md:text-sm text-gray-400 tracking-wider">ACTIVE RESEARCHERS</div>
               </Card>
               <Card className="bg-gray-900/80 border-gray-700 text-center p-3 md:p-6">
-                <div className="text-2xl md:text-4xl font-bold text-purple-400 tracking-wider mb-1 md:mb-2">1,203</div>
+                <div className="text-2xl md:text-4xl font-bold text-purple-400 tracking-wider mb-1 md:mb-2">?</div>
                 <div className="text-xs md:text-sm text-gray-400 tracking-wider">EVOLVED ENTITIES</div>
               </Card>
               <Card className="bg-gray-900/80 border-gray-700 text-center p-3 md:p-6">
-                <div className="text-2xl md:text-4xl font-bold text-yellow-400 tracking-wider mb-1 md:mb-2">47</div>
+                <div className="text-2xl md:text-4xl font-bold text-yellow-400 tracking-wider mb-1 md:mb-2">?</div>
                 <div className="text-xs md:text-sm text-gray-400 tracking-wider">REBIRTH EVENTS</div>
               </Card>
             </div>
