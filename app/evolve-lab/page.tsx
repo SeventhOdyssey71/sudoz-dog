@@ -634,7 +634,7 @@ export default function EvolveLab() {
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>Evolution costs 1 SUI per level</p>
-                              <p>Each level grants a new mysterious trait</p>
+                            
                             </TooltipContent>
                           </Tooltip>
 
@@ -679,7 +679,7 @@ export default function EvolveLab() {
 
                         <div className="text-center text-sm text-gray-400 space-y-1">
                           <p>• Artifacts can evolve up to level 10</p>
-                          <p>• Each level grants a new mysterious trait</p>
+                        
                           <p>• Evolution costs 1 SUI per level</p>
                         </div>
                       </div>

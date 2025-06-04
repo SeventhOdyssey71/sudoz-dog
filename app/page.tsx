@@ -11,16 +11,13 @@ import {
   Sparkles,
   Dna,
   Activity,
-  Shield,
-  Users,
-  TrendingUp,
   Eye,
   AlertTriangle,
-  Menu,
   CheckCircle,
   FlaskConical,
 } from "lucide-react"
 import { useState } from "react"
+import { Input } from "@/components/ui/input"
 
 export default function HomePage() {
   const [navOpen, setNavOpen] = useState(false)
@@ -106,9 +103,19 @@ export default function HomePage() {
                     variant="outline"
                     size="lg"
                     className="w-full border-green-400 text-green-400 hover:bg-green-400/10 hover:text-green-300 px-8 md:px-12 py-6 md:py-8 text-lg md:text-xl font-bold rounded-xl transition-all duration-300 hover:scale-105 tracking-wider"
+                    disabled
                   >
                     <Sparkles className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
                     VIEW COLLECTION
+                  </Button>
+                </Link>
+                <Link href="/vault" className="block w-full md:w-auto">
+                  <Button
+                    size="lg"
+                    className="w-full bg-purple-500 hover:bg-purple-600 text-white px-8 md:px-12 py-6 md:py-8 text-lg md:text-xl font-bold rounded-xl shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-purple-500/40 hover:scale-105 tracking-wider"
+                    disabled
+                  >
+                    VIEW VAULT
                   </Button>
                 </Link>
               </div>
@@ -145,7 +152,10 @@ export default function HomePage() {
               <div>
                 <h3 className="text-lg md:text-4xl font-bold text-green-400 mb-3 md:mb-6 tracking-wider">GENETIC BREAKTHROUGH</h3>
                 <p className="text-xs md:text-lg text-gray-300 mb-3 md:mb-6 leading-relaxed">
-                  Each SUDOZ artifact contains a unique genetic code—a digital DNA sequence that determines its traits, rarity, and evolutionary potential. Through our proprietary Level Protocol Interface, you can now manipulate this code directly.
+                There are 7 different types of Artifacts.
+When you level up the first time, you get one of them at random. From that point on, all your future levels stay within that same type.
+
+
                 </p>
                 <div className="space-y-2 md:space-y-4">
                   <div className="flex items-center space-x-2 md:space-x-3">
@@ -153,8 +163,8 @@ export default function HomePage() {
                     <span className="text-xs md:text-base text-gray-300">10 Evolution Levels Per Artifact</span>
                   </div>
                   <div className="flex items-center space-x-2 md:space-x-3">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
-                    <span className="text-xs md:text-base text-gray-300">Randomized Trait Generation</span>
+                    
+
                   </div>
                   <div className="flex items-center space-x-2 md:space-x-3">
                   
@@ -221,50 +231,23 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Warning Section */}
-        <section className="relative z-10 py-16 md:py-32 px-6 bg-red-900/10">
+        {/* About Us Section */}
+        <section className="relative z-10 py-16 md:py-32 px-6 bg-yellow-900/10">
           <div className="container mx-auto max-w-4xl text-center">
-            <div className="inline-flex items-center px-3 py-1 md:px-6 md:py-3 bg-red-500/20 border border-red-500/40 rounded-full text-red-400 text-xs md:text-lg mb-4 md:mb-8 tracking-wider">
-              <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" />
-              CLASSIFIED WARNING
-            </div>
-
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-8 tracking-wider">PROCEED WITH CAUTION</h2>
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-8 tracking-wider">ABOUT SUDOZ</h2>
             <p className="text-sm md:text-xl text-gray-300 mb-8 md:mb-12 leading-relaxed">
-              The SUDOZ Evolution Laboratory is a fictional representation of experimental gameplay. Interactions like evolution and mutation are metaphorical mechanics within a creative storyline.
-              Genetic modifications within this experience are permanent and irreversible. Evolution may result in unpredictable outcomes.
-              No real animals are involved or harmed in this project.
+            SUDOZ is a collection of 5,555 digital dog specimens made for those who appreciate dogs, clean PFPs, and internet culture with a twist. Each SUDOZ carries its own unique look — blending vibes, energy, and just the right amount of chaos.
+
+Built on the Sui blockchain, SUDOZ lives at the edge of experimental storytelling and digital expression. No promises, no pressure — just a community-driven project exploring what happens when creativity, tech, and culture collide.
+
+Whether you're here to collect, connect, or simply enjoy the ride — welcome to SUDOZ.
             </p>
-
-            <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
-              <div className="p-4 md:p-6 bg-gray-900/50 border border-red-400/30 rounded-xl">
-                <Shield className="w-6 h-6 md:w-8 md:h-8 text-red-400 mx-auto mb-3 md:mb-4" />
-                <h4 className="text-base md:text-lg font-bold text-white mb-1 md:mb-2 tracking-wide">FICTIONAL & IRREVERSIBLE</h4>
-                <p className="text-xs md:text-sm text-gray-400">Genetic modifications are part of the fictional narrative and cannot be undone within the game mechanics.</p>
-              </div>
-              <div className="p-4 md:p-6 bg-gray-900/50 border border-yellow-400/30 rounded-xl">
-                <Activity className="w-6 h-6 md:w-8 md:h-8 text-yellow-400 mx-auto mb-3 md:mb-4" />
-                <h4 className="text-base md:text-lg font-bold text-white mb-1 md:mb-2 tracking-wide">UNKNOWN OUTCOMES</h4>
-                <p className="text-xs md:text-sm text-gray-400">Evolution results are governed by quantum randomness</p>
-              </div>
-              <div className="p-4 md:p-6 bg-gray-900/50 border border-purple-400/30 rounded-xl">
-                <Users className="w-6 h-6 md:w-8 md:h-8 text-purple-400 mx-auto mb-3 md:mb-4" />
-                <h4 className="text-base md:text-lg font-bold text-white mb-1 md:mb-2 tracking-wide">EXPERIMENTAL GAMEPLAY</h4>
-                <p className="text-xs md:text-sm text-gray-400">Participation is for experimental gameplay and entertainment purposes within the SUDOZ ecosystem.</p>
-              </div>
-            </div>
-
-            <p className="text-sm md:text-lg text-gray-400 mb-6 md:mb-8">
-              By proceeding, you acknowledge the experimental and fictional nature of the SUDOZ Laboratory and accept full responsibility for your participation and any outcomes.
-            </p>
-
-            <Link href="/evolve-lab">
+            <Link href="#" /* TODO: Replace # with actual social link */>
               <Button
                 size="lg"
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl shadow-lg shadow-red-500/25 transition-all duration-300 hover:shadow-red-500/40 hover:scale-105 tracking-wider"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl shadow-lg shadow-yellow-500/25 transition-all duration-300 hover:shadow-yellow-500/40 hover:scale-105 tracking-wider"
               >
-                <AlertTriangle className="w-5 h-5 mr-3" />I UNDERSTAND THE RISKS
-                <ArrowRight className="w-5 h-5 ml-3" />
+                VISIT SOCIALS
               </Button>
             </Link>
           </div>
@@ -300,7 +283,6 @@ export default function HomePage() {
                   size="lg"
                   className="border-gray-400 text-gray-400 hover:bg-gray-400/10 hover:text-white px-6 py-3 text-base md:px-12 md:py-6 md:text-xl font-bold rounded-xl transition-all duration-300 hover:scale-105 tracking-wider"
                 >
-                  <TrendingUp className="w-6 h-6 mr-3" />
                   RESEARCH DOCS
                 </Button>
               </Link>
