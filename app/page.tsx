@@ -81,8 +81,8 @@ export default function HomePage() {
           <div className="relative z-10 w-full max-w-7xl mx-auto text-center">
             <div className="space-y-6 md:space-y-8">
               <h1 className="text-4xl md:text-7xl font-bold text-white tracking-tight">
-                Welcome to the
-                <span className="block text-green-400 mt-2">SUDOZ Universe</span>
+                Welcome to
+                <span className="block text-green-400 mt-2">Sudoz</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
                 A community-driven NFT ecosystem where imagination meets innovation. 

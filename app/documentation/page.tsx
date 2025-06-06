@@ -195,12 +195,12 @@ export default function DocumentationPage() {
             </CardContent>
           </Card>
 
-          {/* Economics & Costs */}
+          {/* Economics & Technical Details */}
           <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
                 <Coins className="w-6 h-6" />
-                ECONOMICS & COSTS
+                ECONOMICS & TECHNICAL DETAILS
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -232,19 +232,8 @@ export default function DocumentationPage() {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Technical Details */}
-          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
-                <Shield className="w-6 h-6" />
-                TECHNICAL DETAILS
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <div>
                   <h4 className="font-semibold text-white mb-3">BLOCKCHAIN</h4>
                   <ul className="space-y-1 text-sm">

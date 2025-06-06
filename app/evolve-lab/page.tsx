@@ -601,7 +601,7 @@ export default function EvolveLab() {
                         Error: {fetchError}
                       </div>
                     ) : artifactNFT ? (
-                      <div className="flex flex-col items-center justify-center h-48">
+                      <div className="flex flex-col items-center justify-center">
                         <div className="relative w-40 h-40 md:w-48 md:h-48 mb-4">
                           <Image
                             src="https://ipfs.io/ipfs/bafkreign7kxwqlqwybqbjotl7cn7budv6fsg67xrrf7xtudradwvoscok4"
@@ -611,6 +611,43 @@ export default function EvolveLab() {
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             priority
                           />
+                        </div>
+                        
+                        {/* Points Display with 2/12 Logic */}
+                        <div className="w-full space-y-3">
+                          <div className="bg-black/50 p-3 rounded-lg border border-gray-800">
+                            <h4 className="text-green-400 font-bold text-sm mb-2 tracking-wider">CURRENT POINTS</h4>
+                            <div className="text-2xl font-bold text-white mb-1">
+                              {calculatePoints(selectedArtifact.level)} / 12
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              Level {selectedArtifact.level} • Base: 2 + Level: {selectedArtifact.level}
+                            </div>
+                          </div>
+                          
+                          {selectedArtifact.level < selectedArtifact.maxLevel && (
+                            <div className="bg-green-400/10 p-3 rounded-lg border border-green-400/30">
+                              <h4 className="text-green-400 font-bold text-sm mb-2 tracking-wider">NEXT LEVEL PREVIEW</h4>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-300">After Level Up:</span>
+                                <span className="text-green-400 font-bold">
+                                  {calculatePoints(selectedArtifact.level + 1)} / 12 (+1 Point)
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-400 mt-1">
+                                Level {selectedArtifact.level + 1} • Base: 2 + Level: {selectedArtifact.level + 1}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {selectedArtifact.level === selectedArtifact.maxLevel && (
+                            <div className="bg-red-400/10 p-3 rounded-lg border border-red-400/30">
+                              <h4 className="text-red-400 font-bold text-sm mb-2 tracking-wider">MAXIMUM EVOLUTION</h4>
+                              <div className="text-xs text-gray-400">
+                                This artifact has reached the maximum possible points (12/12)
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
