@@ -4,6 +4,7 @@ import { Orbitron } from "next/font/google"
 import "./globals.css"
 import "@mysten/dapp-kit/dist/index.css"
 import ClientProviders from "./providers"
+import TermsDialog from "./components/TermsDialog"
 
 const orbitron = Orbitron({ subsets: ["latin"] })
 
@@ -40,6 +41,7 @@ export default function RootLayout({
       <body className={orbitron.className}>
         <ClientProviders>
           {children}
+          <TermsDialog />
         </ClientProviders>
       </body>
     </html>

@@ -189,7 +189,7 @@ When you level up the first time, you get one of them at random. From that point
         <section className="relative z-10 py-16 md:py-32 px-6">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center mb-8 md:mb-20">
-              <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 md:mb-8 tracking-wider">THE SPECIMEN COLLECTION</h2>
+              <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 md:mb-8 tracking-wider">THE SUDOZ COLLECTION</h2>
               <p className="text-base md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
                 5,555 unique digital life forms await evolution. Each specimen contains distinct genetic markers and
                 evolutionary potential. The collection represents the first successful attempt at creating truly living
@@ -200,7 +200,7 @@ When you level up the first time, you get one of them at random. From that point
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8 md:mb-16">
               <Card className="bg-gray-900/80 border-gray-700 text-center p-3 md:p-6">
                 <div className="text-2xl md:text-4xl font-bold text-green-400 tracking-wider mb-1 md:mb-2">5,555</div>
-                <div className="text-xs md:text-sm text-gray-400 tracking-wider">TOTAL SPECIMENS</div>
+                <div className="text-xs md:text-sm text-gray-400 tracking-wider">TOTAL SUDOZ</div>
               </Card>
               <Card className="bg-gray-900/80 border-gray-700 text-center p-3 md:p-6">
                 <div className="text-2xl md:text-4xl font-bold text-cyan-400 tracking-wider mb-1 md:mb-2">?</div>
@@ -223,7 +223,7 @@ When you level up the first time, you get one of them at random. From that point
                   className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-purple-500/40 hover:scale-105 tracking-wider"
                 >
                   <Eye className="w-4 h-4 mr-2 md:w-5 md:h-5 md:mr-3" />
-                  BROWSE SPECIMENS
+                  BROWSE SUDOZ
                   <ArrowRight className="w-4 h-4 ml-2 md:w-5 md:h-5 md:ml-3" />
                 </Button>
               </Link>
@@ -265,7 +265,7 @@ Whether you're here to collect, connect, or simply enjoy the ride — welcome to
               laboratory awaits your arrival.
             </p>
 
-            <div className="flex justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
               <Link href="/evolve-lab">
                 <Button
                   size="lg"
@@ -274,6 +274,16 @@ Whether you're here to collect, connect, or simply enjoy the ride — welcome to
                   <Zap className="w-6 h-6 mr-3" />
                   BEGIN EVOLUTION
                   <ArrowRight className="w-6 h-6 ml-3" />
+                </Button>
+              </Link>
+
+              <Link href="/documentation">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-gray-400 text-gray-400 hover:bg-gray-400/10 hover:text-white px-6 py-3 text-base md:px-12 md:py-6 md:text-xl font-bold rounded-xl transition-all duration-300 hover:scale-105 tracking-wider"
+                >
+                  VIEW DOCUMENTATION
                 </Button>
               </Link>
             </div>

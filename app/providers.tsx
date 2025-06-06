@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { createNetworkConfig, SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
 import { getFullnodeUrl } from '@mysten/sui/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { TermsProvider } from './components/TermsContext';
 
 const { networkConfig } = createNetworkConfig({
   mainnet: { url: getFullnodeUrl('mainnet') },
@@ -17,14 +18,16 @@ export default function ClientProviders({ children }: { children: React.ReactNod
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
         <WalletProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <TermsProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem={false}
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </TermsProvider>
         </WalletProvider>
       </SuiClientProvider>
     </QueryClientProvider>

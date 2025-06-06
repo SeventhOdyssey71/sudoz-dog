@@ -315,13 +315,10 @@ export default function EvolveLab() {
 
   // Function to calculate points based on level
   const calculatePoints = (level: number) => {
-    // Level 0: 0 points (no points until first upgrade)
-    // Level 1: 2 points (first upgrade gives 2 points)
-    // Each level from 2-10: +1 point
+    // Level 0: 2 points (base points)
+    // Each level from 1-10: +1 point
     // Max points: 12 (at level 10)
-    if (level === 0) return 0
-    if (level === 1) return 2
-    return 2 + (level - 1) // 2 base points + additional points for levels 2-10
+    return 2 + level
   }
 
   // Mock artifact data - single artifact
@@ -751,9 +748,7 @@ export default function EvolveLab() {
                           </div>
                           
                           <p className="text-center text-xs text-gray-500 mt-3">
-                            {selectedArtifact.level === 0 
-                              ? "Upgrade to Level 1 to earn your first 2 points!"
-                              : selectedArtifact.level < 10 
+                            {selectedArtifact.level < 10 
                               ? `Next level: +1 point (${calculatePoints(selectedArtifact.level + 1)} total)`
                               : "Maximum points reached!"
                             }

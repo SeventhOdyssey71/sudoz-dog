@@ -29,7 +29,7 @@ export default function AboutPage() {
           <div className="container mx-auto max-w-4xl text-center">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-8 tracking-wider">ABOUT SUDOZ</h2>
             <p className="text-sm md:text-xl text-gray-300 mb-8 md:mb-12 leading-relaxed">
-            SUDOZ is a collection of 5,555 digital dog specimens made for those who appreciate dogs, clean PFPs, and internet culture with a twist. Each SUDOZ carries its own unique look — blending vibes, energy, and just the right amount of chaos.
+            SUDOZ is a collection of 5,555 digital dog SUDOZ made for those who appreciate dogs, clean PFPs, and internet culture with a twist. Each SUDOZ carries its own unique look — blending vibes, energy, and just the right amount of chaos.
 
 Built on the Sui blockchain, SUDOZ lives at the edge of experimental storytelling and digital expression. No promises, no pressure — just a community-driven project exploring what happens when creativity, tech, and culture collide.
 
