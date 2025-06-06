@@ -19,7 +19,7 @@ const targetNFTType = '0xd44eeba23c7256b426113b5b645638f00abc0f27ec224f7286be6f9
 // BlockVision API Key
 const BLOCKVISION_API_KEY = '2vmcIQeMF5JdhEXyuyQ8n79UNoO';
 
-// BlockVision API for fetching kiosk NFTs
+// BlockVision API for fetching kioskNFTs
 async function fetchNFTsWithBlockVision(walletAddress, apiKey) {
   try {
     console.log(`Fetching NFTs for wallet ${walletAddress} using BlockVision API...`);

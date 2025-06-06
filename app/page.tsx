@@ -106,7 +106,7 @@ export default function HomePage() {
                     disabled
                   >
                     <Sparkles className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
-                    VIEW COLLECTION
+                    COLLECTION
                   </Button>
                 </Link>
                 <Link href="/vault" className="block w-full md:w-auto">
@@ -115,7 +115,7 @@ export default function HomePage() {
                     className="w-full bg-purple-500 hover:bg-purple-600 text-white px-8 md:px-12 py-6 md:py-8 text-lg md:text-xl font-bold rounded-xl shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-purple-500/40 hover:scale-105 tracking-wider"
                     disabled
                   >
-                    VIEW VAULT
+                    THE VAULT
                   </Button>
                 </Link>
               </div>
@@ -242,7 +242,7 @@ Built on the Sui blockchain, SUDOZ lives at the edge of experimental storytellin
 
 Whether you're here to collect, connect, or simply enjoy the ride — welcome to SUDOZ.
             </p>
-            <Link href="#" /* TODO: Replace # with actual social link */>
+            <Link href="https://x.com/TheSUDOZ" target="_blank" rel="noopener noreferrer">
               <Button
                 size="lg"
                 className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl shadow-lg shadow-yellow-500/25 transition-all duration-300 hover:shadow-yellow-500/40 hover:scale-105 tracking-wider"
@@ -265,7 +265,7 @@ Whether you're here to collect, connect, or simply enjoy the ride — welcome to
               laboratory awaits your arrival.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
+            <div className="flex justify-center">
               <Link href="/evolve-lab">
                 <Button
                   size="lg"
@@ -274,16 +274,6 @@ Whether you're here to collect, connect, or simply enjoy the ride — welcome to
                   <Zap className="w-6 h-6 mr-3" />
                   BEGIN EVOLUTION
                   <ArrowRight className="w-6 h-6 ml-3" />
-                </Button>
-              </Link>
-
-              <Link href="/docs">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-gray-400 text-gray-400 hover:bg-gray-400/10 hover:text-white px-6 py-3 text-base md:px-12 md:py-6 md:text-xl font-bold rounded-xl transition-all duration-300 hover:scale-105 tracking-wider"
-                >
-                  RESEARCH DOCS
                 </Button>
               </Link>
             </div>

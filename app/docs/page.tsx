@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Zap, Flame, Coins, Shield, TrendingUp, Users } from "lucide-react"
+import { ArrowLeft, Zap, Flame, Coins, Shield, TrendingUp, Users, Star, Gift, AlertCircle } from "lucide-react"
 
 export default function DocsPage() {
   return (
@@ -27,86 +27,127 @@ export default function DocsPage() {
         <div className="text-xl font-bold text-green-400 tracking-wider">DOCUMENTATION</div>
       </header>
 
-      <main className="relative z-10 container mx-auto px-6 py-12 md:py-20 max-w-3xl">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center tracking-wider">📜 SUDOZ Project – User Participation Agreement</h1>
+      <main className="relative z-10 container mx-auto px-6 py-12 md:py-20 max-w-4xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center tracking-wider">📜 SUDOZ Evolution Lab - Complete Guide</h1>
         
-        <p className="mb-6 leading-relaxed">
-          By participating in the SUDOZ ecosystem — including interaction with Artifacts, Dog NFTs, and related experiences — you (“the User”) acknowledge and agree to the following terms:
+        <p className="mb-6 leading-relaxed text-center text-gray-400">
+          Welcome to the SUDOZ Evolution Lab documentation. Learn everything about evolving your Artifacts and maximizing your rewards.
         </p>
         <hr className="border-gray-700 my-8" />
 
         <div className="space-y-8">
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">1. Imaginative Experience</h2>
-            <p className="leading-relaxed">
-              The SUDOZ project is entirely fictional. All narratives involving animals, including dogs or experiments, are part of a creative storyline. These depictions do not reflect real-world actions, beliefs, or intentions. No animals were harmed, nor is harm promoted in any way through this project.
-            </p>
-          </div>
+          {/* Evolution System */}
+          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
+                <Zap className="w-6 h-6" />
+                Evolution System Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="leading-relaxed">
+                The SUDOZ main collection comes from evolving Artifacts through 10 distinct levels. Each evolution transforms your digital specimen, unlocking new visual characteristics and increasing its value within the ecosystem.
+              </p>
+              <div className="bg-black/50 p-4 rounded-lg border border-gray-800">
+                <h4 className="font-semibold text-white mb-2">Total Evolution Cost:</h4>
+                <p className="text-green-400 text-xl">10 SUI for complete evolution (Level 1 to Level 10)</p>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">2. Experimental Gameplay</h2>
-            <p className="leading-relaxed">
-              SUDOZ is designed as a gamified and experimental NFT ecosystem. Features such as “leveling up,” “burning,” and “evolution” are metaphorical mechanics for user interaction and engagement. Participation in these features is entirely optional.
-            </p>
-          </div>
+          {/* Level Costs */}
+          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
+                <Coins className="w-6 h-6" />
+                Evolution Level Costs
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
+                  <div key={level} className="bg-black/50 p-3 rounded-lg border border-gray-800 text-center">
+                    <p className="text-sm text-gray-400">Level {level}</p>
+                    <p className="text-lg font-bold text-green-400">1 SUI</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-sm text-gray-400 text-center">
+                Each evolution level costs 1 SUI, with cumulative progression building your specimen's power.
+              </p>
+            </CardContent>
+          </Card>
 
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">3. Use of Funds</h2>
-            <p className="leading-relaxed">
-              Any SUI or cryptocurrency used to interact with the project (e.g., level-ups, transactions) is spent voluntarily. These actions are initiated by the user and are non-refundable. The project creators do not hold responsibility for individual financial decisions.
-            </p>
-          </div>
+          {/* Point System */}
+          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
+                <Star className="w-6 h-6" />
+                Point System & Rewards
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-black/50 p-4 rounded-lg border border-gray-800">
+                <h4 className="font-semibold text-white mb-3">How Points Work:</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    <span>Level 0 (Base): 2 points</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    <span>Each level increase: +1 point</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {[
+                  { level: 0, points: 2 },
+                  { level: 1, points: 3 },
+                  { level: 2, points: 4 },
+                  { level: 3, points: 5 },
+                  { level: 4, points: 6 },
+                  { level: 5, points: 7 },
+                  { level: 6, points: 8 },
+                  { level: 7, points: 9 },
+                  { level: 8, points: 10 },
+                  { level: 9, points: 11 },
+                  { level: 10, points: 12 },
+                ].map(({ level, points }) => (
+                  <div key={level} className="bg-black/30 p-2 rounded border border-gray-800 text-center">
+                    <p className="text-xs text-gray-400">Level {level}</p>
+                    <p className="font-bold text-green-400">{points} pts</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">4. No Financial Guarantees</h2>
-            <p className="leading-relaxed">
-              SUDOZ makes no promises or guarantees regarding the financial value of any NFTs, including Dog NFTs or Artifacts. The floor price, resale value, and market performance are determined solely by the open market and community consensus.
-            </p>
-          </div>
+          {/* Giveaway System */}
+          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
+                <Gift className="w-6 h-6" />
+                Giveaway Entry System
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="leading-relaxed">
+                Your Artifact's level directly impacts your chances in community giveaways. Higher levels mean more entries!
+              </p>
+              <div className="bg-black/50 p-4 rounded-lg border border-gray-800">
+                <h4 className="font-semibold text-white mb-3">Example:</h4>
+                <p className="text-gray-300">
+                  If you own a Level 5 Artifact (7 points), you receive <span className="text-green-400 font-bold">7 entries/tickets</span> in each giveaway you participate in.
+                </p>
+              </div>
+              <p className="text-sm text-gray-400">
+                This reward system incentivizes evolution while maintaining fairness for all community members.
+              </p>
+            </CardContent>
+          </Card>
 
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">5. Community-Driven Ecosystem</h2>
-            <p className="leading-relaxed">
-              All progression, decisions, and developments in the SUDOZ universe are community-driven. No central authority dictates future price movements or rewards. You acknowledge that you are engaging with the ecosystem at your own discretion.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">6. Art Usage & Attribution</h2>
-            <p className="leading-relaxed">
-              <ul>
-                <li><strong>Artifacts Collection:</strong> All visuals are AI-generated and used purely for storytelling and aesthetic purposes.</li>
-                <li><strong>Dog NFT Collection:</strong> Artwork is created by human artists commissioned for the project.</li>
-              </ul>
-              By engaging, you accept that some visual content may use generative AI tools and is not intended to mislead.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">7. No Promises of Utility</h2>
-            <p className="leading-relaxed">
-              This project is not a financial product or a guaranteed reward system. It does not offer staking, passive income, or future token airdrops unless explicitly announced. All features are subject to change based on development and community feedback.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">8. Assumption of Risk</h2>
-            <p className="leading-relaxed">
-              By participating, you understand and accept that all interactions — including purchases, upgrades, burns, and marketplace trading — involve inherent risk. You are responsible for your own actions and choices within the SUDOZ ecosystem.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-green-400 mb-3 tracking-wide">9. Final Agreement</h2>
-            <p className="leading-relaxed">
-              By continuing to engage with the SUDOZ project, you acknowledge that:
-            </p>
-            <ul className="list-disc list-inside ml-4">
-              <li>You have read and understood this agreement.</li>
-              <li>You voluntarily accept all terms without coercion or expectation of return.</li>
-              <li>You are solely responsible for your decisions and interactions within the ecosystem.</li>
-            </ul>
-          </div>
         </div>
       </main>
 
