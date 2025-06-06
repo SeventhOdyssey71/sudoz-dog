@@ -98,12 +98,11 @@ export default function HomePage() {
                     ENTER THE LAB
                   </Button>
                 </Link>
-                <Link href="/collection" className="block w-full md:w-auto">
+                <Link href="https://www.tradeport.xyz/sui/collection/0xd44eeba23c7256b426113b5b645638f00abc0f27ec224f7286be6f9853df8a5a?bottomTab=trades&tab=items" className="block w-full md:w-auto" target="_blank" rel="noopener noreferrer">
                   <Button
                     variant="outline"
                     size="lg"
                     className="w-full border-green-400 text-green-400 hover:bg-green-400/10 hover:text-green-300 px-8 md:px-12 py-6 md:py-8 text-lg md:text-xl font-bold rounded-xl transition-all duration-300 hover:scale-105 tracking-wider"
-                    disabled
                   >
                     <Sparkles className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
                     COLLECTION
@@ -113,7 +112,6 @@ export default function HomePage() {
                   <Button
                     size="lg"
                     className="w-full bg-purple-500 hover:bg-purple-600 text-white px-8 md:px-12 py-6 md:py-8 text-lg md:text-xl font-bold rounded-xl shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-purple-500/40 hover:scale-105 tracking-wider"
-                    disabled
                   >
                     THE VAULT
                   </Button>
@@ -217,16 +215,15 @@ When you level up the first time, you get one of them at random. From that point
             </div>
 
             <div className="text-center">
-              <Link href="/collection">
-                <Button
-                  size="lg"
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-purple-500/40 hover:scale-105 tracking-wider"
-                >
-                  <Eye className="w-4 h-4 mr-2 md:w-5 md:h-5 md:mr-3" />
-                  BROWSE SUDOZ
-                  <ArrowRight className="w-4 h-4 ml-2 md:w-5 md:h-5 md:ml-3" />
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                className="bg-gray-600 hover:bg-gray-600 text-gray-400 px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl cursor-not-allowed tracking-wider"
+                disabled
+              >
+                <Eye className="w-4 h-4 mr-2 md:w-5 md:h-5 md:mr-3" />
+                BROWSE SUDOZ
+                <ArrowRight className="w-4 h-4 ml-2 md:w-5 md:h-5 md:ml-3" />
+              </Button>
             </div>
           </div>
         </section>

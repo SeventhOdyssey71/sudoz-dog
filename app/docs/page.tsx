@@ -55,6 +55,44 @@ export default function DocsPage() {
             </CardContent>
           </Card>
 
+          {/* SUDOZ NFTs and Artifacts Relationship */}
+          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
+                <AlertCircle className="w-6 h-6" />
+                SUDOZ NFTs & Artifacts: The Connection
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-black/50 p-4 rounded-lg border border-gray-800">
+                <h4 className="font-semibold text-white mb-3">Key Information:</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    <span>There are a total of <span className="text-green-400 font-bold">5555 SUDOZ NFTs</span> and <span className="text-cyan-400 font-bold">13,500+ Artifacts</span></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    <span>To claim a SUDOZ NFT, you must <span className="text-yellow-400 font-bold">level up your Artifact to level 10</span>, then burn it to receive one SUDOZ</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    <span>SUDOZ is available on a <span className="text-red-400 font-bold">first-come, first-served basis</span> — once all 5555 are claimed, no more can be minted</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-400">•</span>
+                    <span>After all SUDOZ are claimed, you can still use your remaining Artifacts for <span className="text-purple-400 font-bold">future events, refund and utility</span> in the SUDOZ ecosystem</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-yellow-400/10 p-4 rounded-lg border border-yellow-400/30">
+                <p className="text-sm text-yellow-400">
+                  <strong>Important:</strong> Not all Artifacts will become SUDOZ NFTs. With 13,500+ Artifacts and only 5,555 SUDOZ available, strategic timing and participation are key!
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Level Costs */}
           <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
             <CardHeader>

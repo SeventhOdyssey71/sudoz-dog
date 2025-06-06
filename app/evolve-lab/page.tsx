@@ -587,6 +587,45 @@ export default function EvolveLab() {
                   <CardHeader>
                     <CardTitle className="text-yellow-400 tracking-wider flex items-center justify-center">
                       <Activity className="w-5 h-5 mr-2" />
+                      ARTIFACT DISPLAY
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 text-center">
+                    {isFetchingNFT ? (
+                      <div className="flex flex-col items-center justify-center h-48 text-gray-400">
+                        <div className="w-10 h-10 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin mb-2"></div>
+                        Fetching Artifact...
+                      </div>
+                    ) : fetchError ? (
+                      <div className="flex items-center justify-center h-48 text-red-400 text-center">
+                        Error: {fetchError}
+                      </div>
+                    ) : artifactNFT ? (
+                      <div className="flex flex-col items-center justify-center h-48">
+                        <div className="relative w-40 h-40 md:w-48 md:h-48 mb-4">
+                          <Image
+                            src="https://ipfs.io/ipfs/bafkreign7kxwqlqwybqbjotl7cn7budv6fsg67xrrf7xtudradwvoscok4"
+                            alt={artifactNFT.data?.display?.name || "Artifact NFT"}
+                            fill
+                            className="object-contain"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-center space-y-4">
+                        <Dna className="w-10 h-10 text-gray-400" />
+                        <p>No NFT found here</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-900/80 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-yellow-400 tracking-wider flex items-center justify-center">
+                      <Activity className="w-5 h-5 mr-2" />
                       GENETIC UPGRADE CONSOLE
                     </CardTitle>
                   </CardHeader>
@@ -638,7 +677,6 @@ export default function EvolveLab() {
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>Evolution costs 1 SUI per level</p>
-                            
                             </TooltipContent>
                           </Tooltip>
 
@@ -683,82 +721,8 @@ export default function EvolveLab() {
 
                         <div className="text-center text-sm text-gray-400 space-y-1">
                           <p>• Artifacts can evolve up to level 10</p>
-                        
                           <p>• Evolution costs 1 SUI per level</p>
                         </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-gray-900/80 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-yellow-400 tracking-wider flex items-center justify-center">
-                      <Activity className="w-5 h-5 mr-2" />
-                      ARTIFACT DISPLAY
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    {isFetchingNFT ? (
-                      <div className="flex flex-col items-center justify-center h-48 text-gray-400">
-                        <div className="w-10 h-10 border-2 border-green-400/30 border-t-green-400 rounded-full animate-spin mb-2"></div>
-                        Fetching Artifact...
-                      </div>
-                    ) : fetchError ? (
-                      <div className="flex items-center justify-center h-48 text-red-400 text-center">
-                        Error: {fetchError}
-                      </div>
-                    ) : artifactNFT ? (
-                      <div className="space-y-4">
-                        <div className="flex flex-col items-center justify-center">
-                          <div className="relative w-40 h-40 md:w-48 md:h-48 mb-4">
-                            <Image
-                              src="https://ipfs.io/ipfs/bafkreign7kxwqlqwybqbjotl7cn7budv6fsg67xrrf7xtudradwvoscok4"
-                              alt={artifactNFT.data?.display?.name || "Artifact NFT"}
-                              fill
-                              className="object-contain"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              priority
-                            />
-                          </div>
-                        </div>
-                        
-                        {/* Points Display */}
-                        <div className="bg-black/50 rounded-lg p-4 border border-gray-700">
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div className="text-center">
-                              <p className="text-gray-400 mb-1">Current Level</p>
-                              <p className="text-2xl font-bold text-green-400">{selectedArtifact.level}</p>
-                            </div>
-                            <div className="text-center">
-                              <p className="text-gray-400 mb-1">Points</p>
-                              <p className="text-2xl font-bold text-cyan-400">{calculatePoints(selectedArtifact.level)}</p>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-3 pt-3 border-t border-gray-700">
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-400 text-xs">Points Progress</span>
-                              <span className="text-green-400 text-xs font-bold">{calculatePoints(selectedArtifact.level)}/12</span>
-                            </div>
-                            <Progress 
-                              value={(calculatePoints(selectedArtifact.level) / 12) * 100} 
-                              className="mt-2 h-2"
-                            />
-                          </div>
-                          
-                          <p className="text-center text-xs text-gray-500 mt-3">
-                            {selectedArtifact.level < 10 
-                              ? `Next level: +1 point (${calculatePoints(selectedArtifact.level + 1)} total)`
-                              : "Maximum points reached!"
-                            }
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-center space-y-4">
-                        <Dna className="w-10 h-10 text-gray-400" />
-                        <p>No NFT found here</p>
                       </div>
                     )}
                   </CardContent>

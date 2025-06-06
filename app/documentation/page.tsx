@@ -41,15 +41,67 @@ export default function DocumentationPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6 p-6">
-              <p className="leading-relaxed text-base">
-                Welcome to the Sudoz Evolution Lab! This experimental facility allows you to upgrade your Sudoz NFTs and unlock new attributes, increased rarity, and enhanced value.
+              <p className="leading-relaxed text-base text-white">
+                Welcome to the SUDOZ Evolution Lab!
+              </p>
+              <p className="leading-relaxed text-base text-white">
+                This experimental facility lets you upgrade your Artifact NFTs and unlock enhanced value as you progress.
               </p>
               <ol className="space-y-3 list-decimal list-inside ml-6 text-white text-base">
-                <li>Connect your wallet to access your Sudoz collection</li>
+                <li>Connect your wallet to access your Artifact collection</li>
                 <li>Navigate to the Evolve Lab</li>
-                <li>Select an artifact from your collection</li>
-                <li>Choose to Level Up or Burn your artifact</li>
+                <li>Select an Artifact from your collection</li>
+                <li>Choose to Level Up or Burn your Artifact</li>
+                <li>Reach Level 10 to unlock the option to burn your Artifact and claim a SUDOZ NFT (limited to 5555, first come, first served)</li>
               </ol>
+            </CardContent>
+          </Card>
+
+          {/* Collection Overview */}
+          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl text-green-400 flex items-center gap-2">
+                <Zap className="w-6 h-6" />
+                Collection Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6 p-6">
+              <p className="leading-relaxed text-base text-white">
+                Understanding the relationship between SUDOZ NFTs and Artifacts is crucial to participating in the ecosystem.
+              </p>
+              
+              <div className="bg-black/50 p-6 rounded-lg border border-gray-800 mt-6">
+                <h4 className="font-semibold text-white mb-4">COLLECTION STRUCTURE:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-green-400 mb-2">5,555</p>
+                    <p className="text-white font-semibold">SUDOZ NFTs</p>
+                    <p className="text-sm text-gray-400">Main Collection</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-cyan-400 mb-2">13,500+</p>
+                    <p className="text-white font-semibold">Artifacts</p>
+                    <p className="text-sm text-gray-400">Evolution Materials</p>
+                  </div>
+                </div>
+                
+                <div className="bg-yellow-900/20 p-4 rounded-lg border border-yellow-600/30 mt-4">
+                  <h5 className="font-semibold text-yellow-400 mb-2">🎯 HOW TO CLAIM A SUDOZ NFT:</h5>
+                  <p className="text-white text-base mb-2">
+                    To claim a SUDOZ NFT, you must level up your Artifact to level 10, then burn it to receive one SUDOZ.
+                  </p>
+                  <p className="text-white text-base">
+                    SUDOZ is available on a <span className="text-yellow-400 font-bold">first-come, first-served</span> basis — once all 5555 are claimed, no more can be minted.
+                  </p>
+                </div>
+
+                <div className="bg-blue-900/20 p-4 rounded-lg border border-blue-600/30 mt-4">
+                  <h5 className="font-semibold text-blue-400 mb-2">🔮 AFTER ALL SUDOZ ARE CLAIMED:</h5>
+                  <p className="text-white text-base">
+                    After all SUDOZ are claimed, you can still use your remaining Artifacts for future events, refund and utility in the SUDOZ ecosystem.
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -62,7 +114,7 @@ export default function DocumentationPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="leading-relaxed">
+              <p className="leading-relaxed text-white">
                 The Level Up system allows you to enhance your Sudoz artifacts through 10 progressive levels, with each level providing additional points and benefits.
               </p>
               
@@ -107,7 +159,7 @@ export default function DocumentationPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="leading-relaxed">
+              <p className="leading-relaxed text-white">
                 The Burn feature allows you to downgrade your artifacts and receive a partial refund of your level-up costs.
               </p>
               

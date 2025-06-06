@@ -68,8 +68,8 @@ export default function RafflePage() {
               <div className="text-sm text-gray-400">Entries: <span className="font-bold text-purple-300">{r.entries}</span></div>
               <div className="text-sm text-gray-400 flex items-center gap-1">Time Left: <span className="font-bold text-white">{r.timeLeft}</span></div>
             </div>
-            <Button className="w-full bg-purple-500 hover:bg-purple-400 text-black font-bold px-8 py-3 text-lg rounded-xl animate-glow mt-auto" onClick={() => setEntered(true)}>
-              {entered ? 'You are entered!' : 'Enter Raffle'}
+            <Button className="w-full bg-gray-600 hover:bg-gray-600 text-gray-400 font-bold px-8 py-3 text-lg rounded-xl cursor-not-allowed mt-auto" disabled>
+              Coming Soon
             </Button>
           </div>
         ))}

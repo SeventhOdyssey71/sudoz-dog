@@ -40,9 +40,7 @@ const VaultPage = () => {
             <Gift className="w-12 h-12 text-green-400 mb-4 mx-auto animate-bounce" />
             <h2 className="text-xl md:text-2xl font-bold text-green-300 mb-2 tracking-wide text-center">Holder Giveaways</h2>
             <p className="text-gray-300 text-center mb-4">Participate in exclusive giveaways for SUDOZ holders. Prizes, NFTs, and more await!</p>
-            <Link href="/vault/giveaway">
-              <Button className="w-full bg-green-500/80 hover:bg-green-400 text-black font-bold shadow-green-400/30 shadow-md animate-glow">Enter Giveaway</Button>
-            </Link>
+            <Button className="w-full bg-gray-600 hover:bg-gray-600 text-gray-400 font-bold cursor-not-allowed" disabled>Coming Soon</Button>
             <div className="absolute -top-8 -right-8 w-24 h-24 bg-green-400/10 rounded-full blur-2xl animate-pulse" />
           </div>
 
@@ -51,9 +49,7 @@ const VaultPage = () => {
             <Ticket className="w-12 h-12 text-purple-400 mb-4 mx-auto animate-bounce" />
             <h2 className="text-xl md:text-2xl font-bold text-purple-300 mb-2 tracking-wide text-center">Raffles</h2>
             <p className="text-gray-300 text-center mb-4">Enter raffles for a chance to win rare SUDOZ artifacts and other rewards.</p>
-            <Link href="/vault/raffle">
-              <Button className="w-full bg-purple-500/80 hover:bg-purple-400 text-white font-bold shadow-purple-400/30 shadow-md animate-glow">Enter Raffle</Button>
-            </Link>
+            <Button className="w-full bg-gray-600 hover:bg-gray-600 text-gray-400 font-bold cursor-not-allowed" disabled>Coming Soon</Button>
             <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-purple-400/10 rounded-full blur-2xl animate-pulse" />
           </div>
 
@@ -62,9 +58,7 @@ const VaultPage = () => {
             <Flame className="w-12 h-12 text-red-400 mb-4 mx-auto animate-bounce" />
             <h2 className="text-xl md:text-2xl font-bold text-red-300 mb-2 tracking-wide text-center">Sacrifice System</h2>
             <p className="text-gray-300 text-center mb-4">Burn your SUDOZ for a chance at legendary rewards. High risk, high reward!</p>
-            <Link href="/vault/burn">
-              <Button className="w-full bg-red-500/80 hover:bg-red-400 text-white font-bold shadow-red-400/30 shadow-md animate-glow">Burn for a Chance</Button>
-            </Link>
+            <Button className="w-full bg-gray-600 hover:bg-gray-600 text-gray-400 font-bold cursor-not-allowed" disabled>Coming Soon</Button>
             <div className="absolute top-1/2 right-0 w-24 h-24 bg-red-400/10 rounded-full blur-2xl animate-pulse" />
           </div>
         </div>

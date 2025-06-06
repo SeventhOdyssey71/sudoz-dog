@@ -68,8 +68,8 @@ export default function GiveawayPage() {
               <div className="text-sm text-gray-400">Entries: <span className="font-bold text-green-300">{g.entries}</span></div>
               <div className="text-sm text-gray-400 flex items-center gap-1">Time Left: <span className="font-bold text-white">{g.timeLeft}</span></div>
             </div>
-            <Button className="w-full bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-3 text-lg rounded-xl animate-glow mt-auto" onClick={() => setEntered(true)}>
-              {entered ? 'You are entered!' : 'Enter Giveaway'}
+            <Button className="w-full bg-gray-600 hover:bg-gray-600 text-gray-400 font-bold px-8 py-3 text-lg rounded-xl cursor-not-allowed mt-auto" disabled>
+              Coming Soon
             </Button>
           </div>
         ))}
