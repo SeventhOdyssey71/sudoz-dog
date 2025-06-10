@@ -5,6 +5,7 @@ import "./globals.css"
 import "@mysten/dapp-kit/dist/index.css"
 import ClientProviders from "./providers"
 import TermsDialog from "./components/TermsDialog"
+import { Toaster } from "@/components/ui/sonner"
 
 const orbitron = Orbitron({ subsets: ["latin"] })
 
@@ -42,6 +43,7 @@ export default function RootLayout({
         <ClientProviders>
           {children}
           <TermsDialog />
+          <Toaster />
         </ClientProviders>
       </body>
     </html>

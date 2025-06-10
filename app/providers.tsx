@@ -11,13 +11,24 @@ const { networkConfig } = createNetworkConfig({
   testnet: { url: getFullnodeUrl('testnet') },
   localnet: { url: getFullnodeUrl('localnet') },
 });
-const queryClient = new QueryClient();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute
+      gcTime: 10 * 60 * 1000, // 10 minutes
+    },
+  },
+});
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-        <WalletProvider>
+        <WalletProvider 
+          autoConnect
+          storageKey="sudoz-wallet-connection"
+        >
           <TermsProvider>
             <ThemeProvider
               attribute="class"
