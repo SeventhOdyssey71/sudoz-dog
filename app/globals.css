@@ -164,3 +164,17 @@
 .pulse-neon {
   animation: pulse-neon 2s ease-in-out infinite;
 }
+
+/* Announcement banner scroll animation */
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.33%);
+  }
+}
+
+.animate-scroll-left {
+  animation: scrollLeft 20s linear infinite;
+}

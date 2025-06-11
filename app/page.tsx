@@ -26,6 +26,22 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Announcement Banner */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-red-400/20 backdrop-blur-md border-b border-red-400/30 text-red-100 py-2 overflow-hidden">
+        <div className="relative">
+          <div className="animate-scroll-left whitespace-nowrap">
+            <span className="inline-block px-8 font-light tracking-wider">
+              🚨 Evolve labs is LIVE now! Upgrade and level up your artifacts.. 🚨
+            </span>
+            <span className="inline-block px-8 font-light tracking-wider">
+              🚨 Evolve labs is LIVE now! Upgrade and level up your artifacts.. 🚨
+            </span>
+            <span className="inline-block px-8 font-light tracking-wider">
+              🚨 Evolve labs is LIVE now! Upgrade and level up your artifacts..🚨
+            </span>
+          </div>
+        </div>
+      </div>
       {/* Moving animated background blurs */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-400/20 rounded-full blur-3xl moving-blur-1"></div>
@@ -47,7 +63,7 @@ export default function HomePage() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-4 py-3 md:p-6">
+      <header className="relative z-10 flex items-center justify-between px-4 py-3 md:p-6 mt-10">
         <div className="text-xl md:text-3xl font-bold text-green-400 tracking-wider flex items-center">
           SUDOZ
         </div>

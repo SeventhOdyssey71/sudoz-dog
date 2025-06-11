@@ -16,6 +16,21 @@ export const metadata: Metadata = {
   authors: [{ name: "Sudoz Team" }],
   viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
+  icons: {
+    icon: [
+      { url: "/fav.png", type: "image/png" },
+      { url: "/fav.png", sizes: "32x32", type: "image/png" },
+      { url: "/fav.png", sizes: "16x16", type: "image/png" },
+    ],
+    shortcut: "/fav.png",
+    apple: "/fav.png",
+    other: [
+      {
+        rel: "icon",
+        url: "/fav.png",
+      },
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -39,6 +54,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/fav.png" type="image/png" />
+        <link rel="shortcut icon" href="/fav.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/fav.png" />
+      </head>
       <body className={orbitron.className}>
         <ClientProviders>
           {children}

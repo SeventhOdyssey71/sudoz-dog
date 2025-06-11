@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSignAndExecuteTransaction, useSuiClient, useCurrentAccount } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { CONTRACT_CONSTANTS } from '@/constants/contract';
@@ -21,6 +21,8 @@ export function NFTCard({ nft }: NFTCardProps) {
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [isEvolving, setIsEvolving] = useState(false);
   const [targetLevel, setTargetLevel] = useState<number>(nft.level + 1);
+  const [showEvolutionVideo, setShowEvolutionVideo] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   
   const client = useSuiClient();
   const account = useCurrentAccount();
@@ -115,43 +117,51 @@ export function NFTCard({ nft }: NFTCardProps) {
   const handleEvolve = async () => {
     if (nft.level !== 10 || nft.type === 'evolved') return;
     
-    setIsEvolving(true);
-    try {
-      const tx = new Transaction();
-      
-      // The evolve function returns the new Evolved NFT
-      const [evolved] = tx.moveCall({
-        target: `${CONTRACT_CONSTANTS.PACKAGE_ID}::${CONTRACT_CONSTANTS.MODULE_NAME}::${CONTRACT_CONSTANTS.FUNCTIONS.EVOLVE_ARTIFACT}`,
-        arguments: [
-          tx.object(nft.objectId),
-          tx.object(CONTRACT_CONSTANTS.GLOBAL_STATS_ID),
-          tx.object(CONTRACT_CONSTANTS.RANDOM_OBJECT_ID),
-        ],
-      });
+    // Show evolution video
+    setShowEvolutionVideo(true);
+    
+    // Wait for video to play
+    setTimeout(async () => {
+      setIsEvolving(true);
+      try {
+        const tx = new Transaction();
+        
+        // The evolve function returns the new Evolved NFT
+        const [evolved] = tx.moveCall({
+          target: `${CONTRACT_CONSTANTS.PACKAGE_ID}::${CONTRACT_CONSTANTS.MODULE_NAME}::${CONTRACT_CONSTANTS.FUNCTIONS.EVOLVE_ARTIFACT}`,
+          arguments: [
+            tx.object(nft.objectId),
+            tx.object(CONTRACT_CONSTANTS.GLOBAL_STATS_ID),
+            tx.object(CONTRACT_CONSTANTS.RANDOM_OBJECT_ID),
+          ],
+        });
 
-      // Transfer the evolved NFT to the sender
-      tx.transferObjects([evolved], tx.pure.address(account?.address || ''));
+        // Transfer the evolved NFT to the sender
+        tx.transferObjects([evolved], tx.pure.address(account?.address || ''));
 
-      const result = await signAndExecute({
-        transaction: tx,
-      });
+        const result = await signAndExecute({
+          transaction: tx,
+        });
 
-      toast.success('Evolution successful!', {
-        description: `${nft.name} has evolved into an Evolved SUDOZ!`,
-      });
+        toast.success('Evolution successful!', {
+          description: `${nft.name} has evolved into an Evolved SUDOZ!`,
+        });
 
-      // Trigger a refetch
-      setTimeout(() => {
-        window.dispatchEvent(new Event('nft-updated'));
-      }, 1000);
-    } catch (error) {
-      console.error('Evolution failed:', error);
-      toast.error('Evolution failed', {
-        description: 'Please try again.',
-      });
-    } finally {
-      setIsEvolving(false);
-    }
+        // Trigger a refetch
+        setTimeout(() => {
+          window.dispatchEvent(new Event('nft-updated'));
+          setShowEvolutionVideo(false);
+        }, 1000);
+      } catch (error) {
+        console.error('Evolution failed:', error);
+        toast.error('Evolution failed', {
+          description: 'Please try again.',
+        });
+        setShowEvolutionVideo(false);
+      } finally {
+        setIsEvolving(false);
+      }
+    }, 3000); // Wait 3 seconds for video to play
   };
 
   const progressPercentage = (nft.level / CONTRACT_CONSTANTS.MAX_LEVEL) * 100;
@@ -159,8 +169,9 @@ export function NFTCard({ nft }: NFTCardProps) {
   const canEvolve = nft.level === 10 && nft.type === 'evolved';
 
   return (
-    <Card className="bg-black/80 border-green-400/30 hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-400/20">
-      <CardContent className="p-6">
+    <>
+      <Card className="bg-black/80 border-green-400/30 hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-400/20">
+        <CardContent className="p-6">
         {/* NFT Image */}
         <div className="relative mb-6">
           <div className="aspect-square rounded-xl overflow-hidden bg-gray-900/50 border border-green-400/20">
@@ -298,5 +309,37 @@ export function NFTCard({ nft }: NFTCardProps) {
         </div>
       </CardContent>
     </Card>
+
+    {/* Evolution Video Overlay */}
+    {showEvolutionVideo && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm">
+        <div className="relative w-full max-w-4xl mx-auto px-4">
+          <video
+            ref={videoRef}
+            src="/sudozEvolve.mp4"
+            autoPlay
+            muted
+            playsInline
+            onEnded={() => {
+              // Video will be hidden after the evolution transaction
+            }}
+            className="w-full h-auto rounded-xl shadow-2xl shadow-purple-500/50"
+          />
+          
+          {/* Evolution Text Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center">
+              <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 animate-pulse">
+                EVOLVING...
+              </h2>
+              <p className="text-xl text-purple-400">
+                Genetic transformation in progress
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
