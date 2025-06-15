@@ -194,7 +194,7 @@ export function EvolvedNFTList() {
                 </div>
                 <div className="mt-4 pt-4 border-t border-gray-700">
                   <p className="text-xs text-gray-400 text-center">
-                    Rare evolved NFT obtained by burning a level 10 artifact
+                    Sudoz evolved NFT obtained by burning a level 10 artifact
                   </p>
                 </div>
               </CardContent>
