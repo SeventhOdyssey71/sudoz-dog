@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Wallet, SearchIcon, FilterIcon, Grid3x3, ListIcon, Sparkles, FlaskConical, Zap, AlertTriangle, CheckCircle, Loader2, RotateCw } from "lucide-react";
+import { ArrowLeft, Wallet, SearchIcon, FilterIcon, Grid3x3, ListIcon, Sparkles, FlaskConical, Zap, AlertTriangle, CheckCircle, Loader2, RotateCw, ExternalLink } from "lucide-react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { toast } from "sonner";
 import WalletConnect from "../components/WalletConnect";
@@ -167,11 +167,16 @@ export default function EvolveLab() {
             <p className="text-gray-400 mb-6">
               No SUDOZ artifacts found in your laboratory. Acquire artifacts to begin genetic experiments.
             </p>
-            <Link href="/collection">
+            <a 
+              href="https://www.tradeport.xyz/sui/collection/0x5c67326d96aa593599722a174b1f358036f3b6ee3a42eccf3065aa02d9ecc666::sudoz_artifacts_v2::SudozArtifact?tab=items&bottomTab=trades"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button className="bg-green-400 hover:bg-green-500 text-black">
+                <ExternalLink className="w-4 h-4 mr-2" />
                 EXPLORE COLLECTION
               </Button>
-            </Link>
+            </a>
           </div>
         )}
 
@@ -275,6 +280,21 @@ export default function EvolveLab() {
 
               {/* Evolved NFTs Tab */}
               <TabsContent value="evolved" className="mt-6">
+                <div className="mb-6 flex justify-center">
+                  <a 
+                    href="https://www.tradeport.xyz/sui/collection/0x5c67326d96aa593599722a174b1f358036f3b6ee3a42eccf3065aa02d9ecc666%3A%3Aevolved_sudoz%3A%3AEvolvedSudoz?bottomTab=trades&tab=items"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="border-purple-400/50 text-purple-400 hover:bg-purple-400/10 hover:border-purple-400"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View collection on Tradeport
+                    </Button>
+                  </a>
+                </div>
                 <EvolvedNFTList />
               </TabsContent>
             </Tabs>
