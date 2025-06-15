@@ -6,7 +6,7 @@ import { CONTRACT_CONSTANTS } from '@/constants/contract';
 import { getUserKiosks } from '@/utils/kioskUtils';
 
 // BlockVision API Key (optional - we'll use direct methods if it fails)
-const BLOCKVISION_API_KEY = '2vmcIQeMF5JdhEXyuyQ8n79UNoO';
+const BLOCKVISION_API_KEY = process.env.NEXT_PUBLIC_BLOCKVISION_API_KEY || '';
 
 export interface NFTData {
   objectId: string;
@@ -41,7 +41,9 @@ export function useNFTs() {
   const fetchNFTDataForWallet = async (walletAddress: string) => {
     try {
       const myHeaders = new Headers();
-      myHeaders.append("X-API-KEY", BLOCKVISION_API_KEY);
+      if (BLOCKVISION_API_KEY) {
+        myHeaders.append("X-API-KEY", BLOCKVISION_API_KEY);
+      }
       myHeaders.append("Content-Type", "application/json");
 
       // Use the correct endpoint for Sui NFTs
@@ -113,10 +115,13 @@ export function useNFTs() {
         url.searchParams.append('pageIndex', '1');
         url.searchParams.append('pageSize', '100'); // Increased page size
         
-        const headers = {
-          'accept': 'application/json',
-          'x-api-key': BLOCKVISION_API_KEY
+        const headers: any = {
+          'accept': 'application/json'
         };
+        
+        if (BLOCKVISION_API_KEY) {
+          headers['x-api-key'] = BLOCKVISION_API_KEY;
+        }
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout for faster fallback

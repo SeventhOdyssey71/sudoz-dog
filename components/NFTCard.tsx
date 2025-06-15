@@ -13,7 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Zap, Sparkles, ArrowUp, FlaskConical, Loader2 } from 'lucide-react';
-import { ensureKiosk } from '@/utils/kioskUtils';
+import { ensureKiosk, getUserKiosks } from '@/utils/kioskUtils';
 
 interface NFTCardProps {
   nft: NFTData;
@@ -187,8 +187,6 @@ export function NFTCard({ nft }: NFTCardProps) {
       const evolutionType = true; // Always use Kiosk Evolution
       
       // Step 5: Execute evolution transaction
-      const tx = new Transaction();
-      
       if (evolutionType) {
         // Kiosk Evolution - Smart kiosk management
         const userAddress = account?.address;
@@ -198,16 +196,71 @@ export function NFTCard({ nft }: NFTCardProps) {
           return;
         }
 
-        // Ensure kiosk exists (create if needed)
-        const kioskInfo = await ensureKiosk(client, userAddress, tx);
+        // Check if user has existing kiosks
+        const existingKiosks = await getUserKiosks(client, userAddress);
+        
+        let kioskId: string;
+        let kioskCapId: string;
+        
+        if (existingKiosks.length === 0) {
+          // Create kiosk in a SEPARATE transaction first (to avoid Random object restrictions)
+          console.log('Creating new kiosk in separate transaction...');
+          
+          const kioskTx = new Transaction();
+          const [kiosk, kioskCap] = kioskTx.moveCall({
+            target: '0x2::kiosk::new',
+            arguments: [],
+          });
+          
+          // Share the kiosk
+          kioskTx.moveCall({
+            target: '0x2::transfer::public_share_object',
+            arguments: [kiosk],
+            typeArguments: ['0x2::kiosk::Kiosk'],
+          });
+          
+          // Transfer cap to user
+          kioskTx.transferObjects([kioskCap], userAddress);
+          
+          // Execute kiosk creation first
+          const kioskResult = await signAndExecute({
+            transaction: kioskTx,
+          });
+          
+          console.log('Kiosk creation result:', kioskResult);
+          
+          // Wait for blockchain to index the new kiosk
+          toast.info('Creating kiosk...', { duration: 3000 });
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          
+          // Fetch the newly created kiosk
+          const updatedKiosks = await getUserKiosks(client, userAddress);
+          if (updatedKiosks.length === 0) {
+            toast.error('Failed to create kiosk. Please try again.');
+            setShowEvolutionVideo(false);
+            return;
+          }
+          
+          kioskId = updatedKiosks[0].kioskId;
+          kioskCapId = updatedKiosks[0].kioskCap;
+          console.log('New kiosk created:', kioskId);
+        } else {
+          // Use existing kiosk
+          kioskId = existingKiosks[0].kioskId;
+          kioskCapId = existingKiosks[0].kioskCap;
+          console.log('Using existing kiosk:', kioskId);
+        }
+        
+        // Now create evolution transaction (separate from kiosk creation)
+        const tx = new Transaction();
         
         // Always use evolve_artifact_to_kiosk since we have a kiosk
         tx.moveCall({
           target: `${CONTRACT_CONSTANTS.PACKAGE_ID}::${CONTRACT_CONSTANTS.MODULE_NAME}::${CONTRACT_CONSTANTS.FUNCTIONS.EVOLVE_ARTIFACT_TO_KIOSK}`,
           arguments: [
             tx.object(nft.objectId),
-            kioskInfo.kioskId,
-            kioskInfo.kioskCap,
+            tx.object(kioskId),
+            tx.object(kioskCapId),
             tx.object(CONTRACT_CONSTANTS.TRANSFER_POLICY_ID),
             tx.object(CONTRACT_CONSTANTS.GLOBAL_STATS_ID),
             tx.object(CONTRACT_CONSTANTS.EVOLVED_STATS_ID),
@@ -223,26 +276,18 @@ export function NFTCard({ nft }: NFTCardProps) {
           ],
         });
         
-        if (kioskInfo.isNew) {
-          console.log('Creating new kiosk and evolving NFT');
-          // Share the kiosk
-          tx.moveCall({
-            target: '0x2::transfer::public_share_object',
-            arguments: [kioskInfo.kioskId],
-            typeArguments: ['0x2::kiosk::Kiosk'],
-          });
-          
-          // Transfer cap to user
-          tx.moveCall({
-            target: '0x2::transfer::public_transfer',
-            arguments: [kioskInfo.kioskCap, tx.pure.address(account?.address || '')],
-            typeArguments: ['0x2::kiosk::KioskOwnerCap'],
-          });
-        } else {
-          console.log('Evolving NFT to existing kiosk:', kioskInfo);
-        }
+        // Show evolution video after confirmation
+        setShowEvolutionVideo(true);
+        
+        // Wait for video to play before executing transaction
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        const result = await signAndExecute({
+          transaction: tx,
+        });
       } else {
-        // Basic Evolution (simple transfer)
+        // Basic Evolution (simple transfer) - not used in current implementation
+        const tx = new Transaction();
         tx.moveCall({
           target: `${CONTRACT_CONSTANTS.PACKAGE_ID}::${CONTRACT_CONSTANTS.MODULE_NAME}::${CONTRACT_CONSTANTS.FUNCTIONS.EVOLVE_ARTIFACT}`,
           arguments: [
@@ -261,17 +306,17 @@ export function NFTCard({ nft }: NFTCardProps) {
           ],
         });
         console.log('Using Basic Evolution - NFT will be transferred directly to you');
+        
+        // Show evolution video after confirmation
+        setShowEvolutionVideo(true);
+        
+        // Wait for video to play before executing transaction
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        const result = await signAndExecute({
+          transaction: tx,
+        });
       }
-      
-      // Show evolution video after confirmation
-      setShowEvolutionVideo(true);
-      
-      // Wait for video to play before executing transaction
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      const result = await signAndExecute({
-        transaction: tx,
-      });
 
       console.log('Evolution successful:', result);
       console.log('Evolved to metadata ID:', selectedMetadataId);
