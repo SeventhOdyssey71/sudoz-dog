@@ -24,6 +24,9 @@ export interface NFTData {
 const apiCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 60000; // 1 minute cache
 
+// Request deduplication to prevent multiple simultaneous requests
+const pendingRequests = new Map<string, Promise<any>>();
+
 export function useNFTs() {
   const [artifacts, setArtifacts] = useState<NFTData[]>([]);
   const [evolvedNFTs, setEvolvedNFTs] = useState<NFTData[]>([]);
@@ -77,19 +80,30 @@ export function useNFTs() {
 
   // Fetch evolved NFTs ONLY from kiosks using BlockVision v2 API
   const fetchEvolvedNFTsWithKiosk = async (walletAddress: string) => {
-    console.log('Fetching evolved NFTs from kiosks for wallet:', walletAddress);
+    const requestKey = `evolved-kiosk-${walletAddress}`;
     
-    try {
-      // Initialize array to hold NFT objects from kiosks
-      let allEvolvedNfts: any[] = [];
+    // Check if there's already a pending request
+    const pendingRequest = pendingRequests.get(requestKey);
+    if (pendingRequest) {
+      console.log('Reusing pending request for evolved NFTs');
+      return pendingRequest;
+    }
+    
+    // Create new request
+    const request = (async () => {
+      console.log('Fetching evolved NFTs from kiosks for wallet:', walletAddress);
       
-      // Check cache first
-      const cacheKey = `evolved-kiosk-${walletAddress}`;
-      const cached = apiCache.get(cacheKey);
-      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        console.log('Using cached BlockVision data');
-        return cached.data;
-      }
+      try {
+        // Initialize array to hold NFT objects from kiosks
+        let allEvolvedNfts: any[] = [];
+        
+        // Check cache first
+        const cacheKey = requestKey;
+        const cached = apiCache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+          console.log('Using cached BlockVision data');
+          return cached.data;
+        }
       
       // Use BlockVision v2 API to fetch NFTs in kiosks
       try {
@@ -105,7 +119,7 @@ export function useNFTs() {
         };
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased timeout
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout for faster fallback
         
         const response = await fetch(url.toString(), { 
           headers,
@@ -156,12 +170,6 @@ export function useNFTs() {
                   objectData.data.kioskId = kioskNft.kioskId;
                   objectData.data.isInKiosk = true;
                   allEvolvedNfts.push(objectData);
-                  
-                  console.log('Added evolved NFT from kiosk:', {
-                    objectId: objectData.data.objectId,
-                    kioskId: kioskNft.kioskId,
-                    collection: kioskNft.collection
-                  });
                 }
               });
             } catch (err) {
@@ -207,12 +215,23 @@ export function useNFTs() {
         apiCache.set(cacheKey, { data: allEvolvedNfts, timestamp: Date.now() });
       }
       
-      return allEvolvedNfts;
-      
-    } catch (error) {
-      console.error('Error in fetchEvolvedNFTsWithKiosk:', error);
-      return [];
-    }
+        return allEvolvedNfts;
+        
+      } catch (error) {
+        console.error('Error in fetchEvolvedNFTsWithKiosk:', error);
+        return [];
+      }
+    })();
+    
+    // Store the pending request
+    pendingRequests.set(requestKey, request);
+    
+    // Clean up after completion
+    request.finally(() => {
+      pendingRequests.delete(requestKey);
+    });
+    
+    return request;
   };
 
   const fetchNFTs = async (retryCount = 0) => {
@@ -237,10 +256,12 @@ export function useNFTs() {
       }
       setError(null);
 
-      // Fetch SUDOZ Artifacts using original method (they're not in kiosks)
-      let artifactsResponse;
-      try {
-        artifactsResponse = await client.getOwnedObjects({
+      // Execute all fetches concurrently for maximum speed
+      const startTime = Date.now();
+      
+      const [artifactsResult, evolvedResult] = await Promise.allSettled([
+        // Fetch artifacts
+        client.getOwnedObjects({
           owner: account.address,
           filter: {
             StructType: CONTRACT_CONSTANTS.TYPES.SUDOZ_ARTIFACT,
@@ -249,168 +270,133 @@ export function useNFTs() {
             showContent: true,
             showDisplay: true,
           },
-        });
-      } catch (fetchError) {
-        console.error('Failed to fetch artifacts:', fetchError);
-        // If network request fails, try again with a shorter timeout
+        }),
+        // Fetch evolved NFTs from kiosks
+        fetchEvolvedNFTsWithKiosk(account.address),
+      ]);
+      
+      console.log(`All fetches completed in ${Date.now() - startTime}ms`);
+      
+      // Handle artifacts result
+      let artifactsResponse;
+      if (artifactsResult.status === 'rejected') {
+        console.error('Failed to fetch artifacts:', artifactsResult.reason);
         if (retryCount < 3) {
           setTimeout(() => fetchNFTs(retryCount + 1), 2000);
           return;
         }
         throw new Error('Network error: Unable to connect to Sui network. Please check your connection.');
-      }
-
-      // Try to fetch NFTs from BlockVision API (includes kiosk NFTs)
-      // This is optional - if it fails, we'll use direct methods
-      let blockVisionData = null;
-      blockVisionData = await fetchNFTDataForWallet(account.address);
-      if (blockVisionData) {
-        console.log('BlockVision API response:', blockVisionData);
+      } else {
+        artifactsResponse = artifactsResult.value;
       }
       
-      // Fetch evolved NFTs only from kiosks using BlockVision API
-      const allEvolvedNfts = await fetchEvolvedNFTsWithKiosk(account.address);
-      console.log(`Total evolved NFTs found in kiosks: ${allEvolvedNfts.length}`);
+      // Handle evolved NFTs result
+      let allEvolvedNfts = [];
+      if (evolvedResult.status === 'fulfilled') {
+        allEvolvedNfts = evolvedResult.value;
+        console.log(`Total evolved NFTs found in kiosks: ${allEvolvedNfts.length}`);
+      } else {
+        console.error('Failed to fetch evolved NFTs:', evolvedResult.reason);
+      }
       
       // Legacy BlockVision v1 data is no longer used for evolved NFTs
       // The enhanced fetchEvolvedNFTsWithKiosk function handles all evolved NFT fetching
-      // Parse artifacts
-      const parsedArtifacts: NFTData[] = artifactsResponse.data
-        .map((nft) => {
-          if (!nft.data?.content || nft.data.content.dataType !== 'moveObject') {
-            console.warn('Skipping artifact - invalid data type:', nft.data);
-            return null;
-          }
+      // Parse artifacts with optimized processing
+      const parsedArtifacts: NFTData[] = [];
+      for (const nft of artifactsResponse.data) {
+        if (!nft.data?.content || nft.data.content.dataType !== 'moveObject') {
+          continue; // Skip invalid entries quickly
+        }
 
-          const content = nft.data.content.fields as any;
-          const display = nft.data.display?.data || {};
-          
-          // Debug logging for artifacts
-          if (!display.image_url && !content.image_url) {
-            console.warn('Artifact missing image URL:', { objectId: nft.data.objectId, content, display });
-          }
-          
-          let imageUrl = display.image_url || content.image_url || '';
-          
-          // For evolved NFTs, construct the proper image URL
-          if (content.metadata_id) {
-            // Use Pinata gateway for evolved NFTs
-            imageUrl = `https://moccasin-grateful-spider-300.mypinata.cloud/ipfs/bafybeic7ymazpspv6ojxwrr6rqu3glnrtzbj3ej477nowr73brmb4hkkka/images/${content.metadata_id}.png`;
-          } else if (imageUrl.startsWith('ipfs://')) {
-            // Convert IPFS URLs to HTTP gateway URLs
-            const ipfsHash = imageUrl.replace('ipfs://', '');
-            imageUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
-          }
+        const content = nft.data.content.fields as any;
+        const display = nft.data.display?.data || {};
+        
+        let imageUrl = display.image_url || content.image_url || '';
+        
+        // Quick IPFS conversion
+        if (imageUrl.startsWith('ipfs://')) {
+          imageUrl = `https://ipfs.io/ipfs/${imageUrl.slice(7)}`;
+        }
 
-          return {
-            objectId: nft.data.objectId,
-            name: display.name || content.name || 'SUDOZ ARTIFACT',
-            description: display.description || content.description || '',
-            imageUrl,
-            level: parseInt(content.level || '0'),
-            points: parseInt(content.points || '0'),
-            path: content.path !== undefined ? parseInt(content.path) : undefined,
-            number: parseInt(content.number || '0'),
-            type: 'artifact' as const,
-          };
-        })
-        .filter((nft): nft is NFTData => nft !== null);
+        parsedArtifacts.push({
+          objectId: nft.data.objectId,
+          name: display.name || content.name || 'SUDOZ ARTIFACT',
+          description: display.description || content.description || '',
+          imageUrl,
+          level: parseInt(content.level || '0'),
+          points: parseInt(content.points || '0'),
+          path: content.path !== undefined ? parseInt(content.path) : undefined,
+          number: parseInt(content.number || '0'),
+          type: 'artifact' as const,
+        });
+      }
 
       // allEvolvedNfts already contains all evolved NFTs from direct ownership and kiosks
       
-      // Parse evolved NFTs
-      const parsedEvolved: NFTData[] = allEvolvedNfts
-        .map((nft) => {
-          if (!nft.data?.content || nft.data.content.dataType !== 'moveObject') {
-            return null;
-          }
+      // Parse evolved NFTs with optimized processing
+      const parsedEvolved: NFTData[] = [];
+      for (const nft of allEvolvedNfts) {
+        if (!nft.data?.content || nft.data.content.dataType !== 'moveObject') {
+          continue; // Skip invalid entries quickly
+        }
 
-          const content = nft.data.content.fields as any;
-          const display = nft.data.display?.data || {};
-          
-          // More detailed logging to debug the structure
-          console.log('Evolved NFT full data:', {
-            objectId: nft.data.objectId,
-            type: nft.data.type,
-            content: content,
-            display: display,
-            hasContent: !!content,
-            contentKeys: Object.keys(content || {}),
-            displayKeys: Object.keys(display || {}),
-          });
-          
-          let imageUrl = display.image_url || content.image_url || '';
-          const metadataId = content.metadata_id || content.metadataId || content.metadata || '';
-          const number = content.number || content.id || '';
-          
-          // Debug logging for evolved NFTs
-          console.log('Processing evolved NFT:', {
-            objectId: nft.data.objectId,
-            hasDisplay: !!display.image_url,
-            metadataId,
-            number,
-            imageUrl,
-            contentFields: Object.keys(content || {}),
-          });
-          
-          // Convert IPFS URLs to HTTP gateway URLs
-          if (imageUrl.startsWith('ipfs://')) {
-            const ipfsHash = imageUrl.replace('ipfs://', '');
-            imageUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
+        const content = nft.data.content.fields as any;
+        const display = nft.data.display?.data || {};
+        
+        let imageUrl = display.image_url || content.image_url || '';
+        const number = content.number || content.id || '';
+        
+        // Quick IPFS conversion
+        if (imageUrl.startsWith('ipfs://')) {
+          imageUrl = `https://ipfs.io/ipfs/${imageUrl.slice(7)}`;
+        }
+        
+        // Deterministic image URL for evolved NFTs
+        if (!imageUrl || imageUrl.includes('placeholder')) {
+          const identifier = number || content.metadata_id || content.metadataId || '';
+          if (identifier) {
+            const paddedId = identifier.toString().padStart(4, '0');
+            imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${paddedId}.png`;
           }
-          
-          // Deterministic image URL construction for evolved NFTs
-          if (!imageUrl || imageUrl.includes('placeholder')) {
-            // Use number as primary identifier (most reliable)
-            const identifier = number || metadataId || '';
-            if (identifier) {
-              // Ensure 4-digit padding for consistency
-              const paddedId = identifier.toString().padStart(4, '0');
-              imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${paddedId}.png`;
-            }
-          }
-          
-          // Final fallback: use a placeholder if still no image
-          if (!imageUrl) {
-            console.warn('No image URL found for evolved NFT:', nft.data.objectId);
-            imageUrl = '/images/sudoz-purple.png'; // Use purple variant as placeholder
-          }
-          
-          const parsedName = display.name || content.name || `THE SUDOZ #${content.number || 'Unknown'}`;
-          
-          console.log('Parsed evolved NFT:', {
-            objectId: nft.data.objectId,
-            name: parsedName,
-            metadataId,
-            imageUrl,
-            number: content.number,
-          });
+        }
+        
+        // Use fallback if still no image
+        if (!imageUrl) {
+          imageUrl = '/images/sudoz-purple.png';
+        }
+        
+        parsedEvolved.push({
+          objectId: nft.data.objectId,
+          name: display.name || content.name || `THE SUDOZ #${number || 'Unknown'}`,
+          description: display.description || content.description || '',
+          imageUrl,
+          level: 10,
+          points: 12,
+          path: content.original_path ? parseInt(content.original_path) : undefined,
+          number: parseInt(number || '0'),
+          type: 'evolved' as const,
+        });
+      }
 
-          return {
-            objectId: nft.data.objectId,
-            name: parsedName,
-            description: display.description || content.description || '',
-            imageUrl,
-            level: 10, // Evolved NFTs are considered max level
-            points: 12, // Max points for evolved
-            path: content.original_path ? parseInt(content.original_path) : undefined,
-            number: parseInt(content.number || '0'),
-            type: 'evolved' as const,
-          };
-        })
-        .filter((nft): nft is NFTData => nft !== null);
-
-      setArtifacts(parsedArtifacts);
-      setEvolvedNFTs(parsedEvolved);
+      // Update state immediately as data becomes available
+      if (parsedArtifacts.length > 0 || artifacts.length === 0) {
+        setArtifacts(parsedArtifacts);
+      }
       
-      // Log successful fetch
+      if (parsedEvolved.length > 0 || evolvedNFTs.length === 0) {
+        setEvolvedNFTs(parsedEvolved);
+      }
+      
+      // Log successful fetch with timing
+      const totalTime = Date.now() - startTime;
       console.log('NFTs fetched successfully:', {
         artifacts: parsedArtifacts.length,
         evolved: parsedEvolved.length,
         account: account.address,
-        totalEvolvedCount: allEvolvedNfts.length,
-        evolvedType: CONTRACT_CONSTANTS.TYPES.EVOLVED_SUDOZ,
-        blockVisionData: blockVisionData?.result?.length || 0,
+        totalTime: `${totalTime}ms`,
+        avgTimePerNFT: parsedArtifacts.length + parsedEvolved.length > 0 
+          ? `${Math.round(totalTime / (parsedArtifacts.length + parsedEvolved.length))}ms` 
+          : 'N/A',
       });
     } catch (err: any) {
       console.error('Error fetching NFTs:', err);
