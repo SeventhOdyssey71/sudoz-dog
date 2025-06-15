@@ -114,7 +114,7 @@ export default function HomePage() {
                     ENTER THE LAB
                   </Button>
                 </Link>
-                <Link href="https://www.tradeport.xyz/sui/collection/0x5c67326d96aa593599722a174b1f358036f3b6ee3a42eccf3065aa02d9ecc666%3A%3Aevolved_sudoz%3A%3AEvolvedSudoz?bottomTab=trades&tab=items">
+                <Link href="https://www.tradeport.xyz/sui/collection/0x5c67326d96aa593599722a174b1f358036f3b6ee3a42eccf3065aa02d9ecc666::sudoz_artifacts_v2::SudozArtifact?tab=items&bottomTab=trades">
                   <Button
                     variant="outline"
                     size="lg"
@@ -231,15 +231,16 @@ When you level up the first time, you get one of them at random. From that point
             </div>
 
             <div className="text-center">
-              <Button
-                size="lg"
-                className="bg-gray-600 hover:bg-gray-600 text-gray-400 px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl cursor-not-allowed tracking-wider"
-                disabled
-              >
-                <Eye className="w-4 h-4 mr-2 md:w-5 md:h-5 md:mr-3" />
-                BROWSE SUDOZ
-                <ArrowRight className="w-4 h-4 ml-2 md:w-5 md:h-5 md:ml-3" />
-              </Button>
+              <Link href="https://www.tradeport.xyz/sui/collection/0x5c67326d96aa593599722a174b1f358036f3b6ee3a42eccf3065aa02d9ecc666%3A%3Aevolved_sudoz%3A%3AEvolvedSudoz?bottomTab=trades&tab=items" target="_blank" rel="noopener noreferrer">
+                <Button
+                  size="lg"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-bold rounded-xl shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-purple-500/40 hover:scale-105 tracking-wider"
+                >
+                  <Eye className="w-4 h-4 mr-2 md:w-5 md:h-5 md:mr-3" />
+                  BROWSE EVOLVED SUDOZ
+                  <ArrowRight className="w-4 h-4 ml-2 md:w-5 md:h-5 md:ml-3" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>

@@ -9,12 +9,16 @@ import { Toaster } from "@/components/ui/sonner"
 
 const orbitron = Orbitron({ subsets: ["latin"] })
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata: Metadata = {
   title: "Sudoz Evolution Lab",
   description: "Evolve your Sudoz NFTs in our experimental sci-fi lab. Level up, enhance, and unlock the true potential of your digital artifacts.",
   keywords: ["NFT", "Evolution", "Digital Art", "Blockchain", "Sudoz"],
   authors: [{ name: "Sudoz Team" }],
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
   icons: {
     icon: [

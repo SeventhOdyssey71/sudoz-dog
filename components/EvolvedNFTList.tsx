@@ -1,29 +1,16 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useCurrentAccount, useSuiClientQuery } from '@mysten/dapp-kit';
-import { CONTRACT_CONSTANTS } from '@/constants/contract';
+import { useCurrentAccount } from '@mysten/dapp-kit';
+import { useNFTs } from '@/hooks/use-nfts';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, ExternalLink, Loader2 } from 'lucide-react';
+import { CONTRACT_CONSTANTS } from '@/constants/contract';
 
 export function EvolvedNFTList() {
   const account = useCurrentAccount();
-
-  const { data, isLoading, error, refetch } = useSuiClientQuery('getOwnedObjects', {
-    owner: account?.address || '',
-    filter: {
-      StructType: CONTRACT_CONSTANTS.TYPES.EVOLVED_SUDOZ,
-    },
-    options: {
-      showType: true,
-      showOwner: true,
-      showContent: true,
-      showDisplay: true,
-    },
-  }, {
-    enabled: !!account,
-  });
+  const { evolvedNFTs, loading, error, refetch } = useNFTs();
 
   // Listen for NFT update events
   useEffect(() => {
@@ -40,7 +27,7 @@ export function EvolvedNFTList() {
     return null;
   }
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="text-center py-12">
         <Loader2 className="w-8 h-8 text-purple-400 animate-spin mx-auto mb-4" />
@@ -52,21 +39,16 @@ export function EvolvedNFTList() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-400">Error loading evolved NFTs: {error.message}</p>
+        <p className="text-red-400">Error loading evolved NFTs: {error}</p>
       </div>
     );
   }
 
-  const evolvedNfts = data?.data || [];
+  console.log('EvolvedNFTList - Total evolved NFTs:', evolvedNFTs.length);
+  console.log('Package ID:', CONTRACT_CONSTANTS.PACKAGE_ID);
+  console.log('Evolved Type:', CONTRACT_CONSTANTS.TYPES.EVOLVED_SUDOZ);
 
-  console.log('Evolved NFT query:', {
-    type: CONTRACT_CONSTANTS.TYPES.EVOLVED_SUDOZ,
-    expectedType: `${CONTRACT_CONSTANTS.PACKAGE_ID}::${CONTRACT_CONSTANTS.EVOLVED_MODULE_NAME}::EvolvedSudoz`,
-    count: evolvedNfts.length,
-    data: evolvedNfts
-  });
-
-  if (evolvedNfts.length === 0) {
+  if (evolvedNFTs.length === 0) {
     return (
       <div className="mb-8">
         <Card className="bg-black/50 border-purple-400/30">
@@ -82,41 +64,20 @@ export function EvolvedNFTList() {
   return (
     <div className="mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {evolvedNfts.map((nft) => {
-          const contentData = nft.data?.content;
-          const content: any = contentData && 'fields' in contentData ? contentData.fields : {};
-          const display = nft.data?.display?.data || {};
-          const objectId = nft.data?.objectId || '';
+        {evolvedNFTs.map((nft) => {
+          const objectId = nft.objectId;
           
-          const name = display.name || content.name || `THE SUDOZ #${content.number || ''}`;
-          let imageUrl = display.image_url || content.image_url || '';
-          const number = content.number || '';
-          const metadataId = content.metadata_id || '';
-          const originalArtifactNumber = content.original_artifact_number || '';
-          const originalPath = content.original_path;
+          const name = nft.name;
+          const imageUrl = nft.imageUrl;
+          const number = nft.number;
+          const path = nft.path;
           
-          console.log('Evolved NFT data:', {
+          console.log('Displaying evolved NFT:', {
             objectId,
-            content,
-            display,
-            imageUrl,
-            metadataId
+            name,
+            number,
+            imageUrl
           });
-          
-          // Convert IPFS URLs to HTTP gateway URLs
-          if (imageUrl.startsWith('ipfs://')) {
-            const ipfsHash = imageUrl.replace('ipfs://', '');
-            imageUrl = `https://gateway.pinata.cloud/ipfs/${ipfsHash}`;
-          } else if (imageUrl.includes('ipfs.io/ipfs/')) {
-            imageUrl = imageUrl.replace('https://ipfs.io/ipfs/', 'https://gateway.pinata.cloud/ipfs/');
-          }
-          
-          // For evolved NFTs, if we still have a placeholder URL, construct the actual URL
-          if (imageUrl.includes('placeholder.webp') && metadataId) {
-            // Use the WebP version of evolved NFTs
-            imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${metadataId}.webp`;
-            console.log('Constructed evolved image URL:', imageUrl);
-          }
           
           return (
             <Card key={objectId} className="bg-black/80 border-purple-400/50 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-purple-400/20 overflow-hidden">
@@ -166,18 +127,18 @@ export function EvolvedNFTList() {
                     <span className="text-purple-400 font-bold">#{number}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Metadata ID:</span>
-                    <span className="text-purple-400 font-mono text-xs">{metadataId}</span>
+                    <span className="text-gray-400">Level:</span>
+                    <span className="text-purple-400">MAX</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Original:</span>
-                    <span className="text-cyan-400">Artifact #{originalArtifactNumber}</span>
+                    <span className="text-gray-400">Points:</span>
+                    <span className="text-purple-400">{nft.points}</span>
                   </div>
-                  {originalPath !== undefined && (
+                  {path !== undefined && (
                     <div className="flex justify-between">
                       <span className="text-gray-400">Heritage:</span>
                       <span className="text-green-400 text-xs">
-                        {CONTRACT_CONSTANTS.PATHS[parseInt(originalPath)]}
+                        {CONTRACT_CONSTANTS.PATHS[path]}
                       </span>
                     </div>
                   )}

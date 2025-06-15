@@ -184,19 +184,15 @@ export function useNFTs() {
             parentId: kiosk.kioskId,
           });
           
-          console.log(`Kiosk ${kiosk.kioskId} dynamic fields:`, dynamicFields);
+          console.log(`Kiosk ${kiosk.kioskId} dynamic fields:`, dynamicFields.data.length);
           
           // Fetch each item in the kiosk
           for (const field of dynamicFields.data) {
             try {
-              // Check if this field name contains an evolved NFT type
               const fieldType = field.objectType || '';
-              const fieldName = JSON.stringify(field.name);
               
-              console.log('Checking kiosk field:', { fieldType, fieldName });
-              
-              // Look for evolved NFTs in the kiosk
-              if (fieldType.includes('0x2::dynamic_field::Field') || fieldType.includes('Item')) {
+              // Check if this is a kiosk item
+              if (fieldType.includes('0x2::dynamic_field::Field')) {
                 const itemData = await client.getDynamicFieldObject({
                   parentId: kiosk.kioskId,
                   name: field.name,
@@ -206,24 +202,32 @@ export function useNFTs() {
                   const content = itemData.data.content as any;
                   const valueType = content.fields?.value?.type || '';
                   
-                  console.log('Kiosk item value type:', valueType);
-                  
-                  // Check if the value contains an evolved NFT
-                  if (valueType.includes('EvolvedSudoz') || 
-                      valueType.includes(CONTRACT_CONSTANTS.EVOLVED_MODULE_NAME)) {
+                  // Check if this is an evolved NFT by checking the type
+                  // The evolved NFT type should include the package ID and evolved_sudoz module
+                  if (valueType.includes(CONTRACT_CONSTANTS.PACKAGE_ID) && 
+                      valueType.includes('evolved_sudoz::EvolvedSudoz')) {
                     
-                    // The evolved NFT is in the value field
-                    const evolvedNftData = content.fields?.value;
-                    if (evolvedNftData) {
-                      // Create a proper object structure
+                    console.log('Found evolved NFT in kiosk with type:', valueType);
+                    
+                    // The value field contains the actual NFT data
+                    const evolvedNftFields = content.fields?.value?.fields;
+                    if (evolvedNftFields) {
+                      // Create a proper object structure that matches the direct ownership format
                       const nftObject = {
                         data: {
                           objectId: field.objectId || itemData.data?.objectId,
                           content: {
                             dataType: 'moveObject',
                             type: valueType,
-                            fields: evolvedNftData.fields || evolvedNftData,
+                            fields: evolvedNftFields,
                             hasPublicTransfer: false,
+                          },
+                          display: {
+                            data: {
+                              name: evolvedNftFields.name || `THE SUDOZ #${evolvedNftFields.number}`,
+                              image_url: evolvedNftFields.image_url || '',
+                              description: evolvedNftFields.description || '',
+                            }
                           },
                           owner: {
                             ObjectOwner: kiosk.kioskId
@@ -233,7 +237,11 @@ export function useNFTs() {
                       };
                       
                       kioskEvolvedNfts.push(nftObject);
-                      console.log('Found evolved NFT in kiosk:', nftObject);
+                      console.log('Added evolved NFT from kiosk:', {
+                        objectId: nftObject.data.objectId,
+                        number: evolvedNftFields.number,
+                        metadataId: evolvedNftFields.metadata_id,
+                      });
                     }
                   }
                 }
@@ -247,7 +255,7 @@ export function useNFTs() {
         }
       }
       
-      console.log('Found kiosk evolved NFTs:', kioskEvolvedNfts.length);
+      console.log('Total evolved NFTs found in kiosks:', kioskEvolvedNfts.length);
 
       // Parse artifacts
       const parsedArtifacts: NFTData[] = artifactsResponse.data
