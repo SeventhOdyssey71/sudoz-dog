@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Wallet, Search, Filter, Grid, List, Sparkles, FlaskConical, Zap, AlertTriangle, CheckCircle, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Wallet, SearchIcon, FilterIcon, Grid3x3, ListIcon, Sparkles, FlaskConical, Zap, AlertTriangle, CheckCircle, Loader2, RotateCw } from "lucide-react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { toast } from "sonner";
 import WalletConnect from "../components/WalletConnect";
@@ -182,7 +182,7 @@ export default function EvolveLab() {
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
                     placeholder="Search artifacts..."
                     value={searchTerm}
@@ -193,7 +193,7 @@ export default function EvolveLab() {
                 
                 <Select value={filterLevel} onValueChange={setFilterLevel}>
                   <SelectTrigger className="w-40 bg-gray-900 border-gray-700 text-white">
-                    <Filter className="w-4 h-4 mr-2" />
+                    <FilterIcon className="w-4 h-4 mr-2" />
                     <SelectValue placeholder="Filter Level" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-900 border-gray-700">
@@ -207,13 +207,13 @@ export default function EvolveLab() {
                 </Select>
                 
                 <Button
-                  onClick={refetch}
+                  onClick={() => refetch()}
                   disabled={loading}
                   variant="outline"
                   size="sm"
                   className="border-green-400 text-green-400 hover:bg-green-400/10"
                 >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  <RotateCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                   Refresh
                 </Button>
               </div>
@@ -225,7 +225,7 @@ export default function EvolveLab() {
                   onClick={() => setViewMode("grid")}
                   className="bg-green-400 hover:bg-green-500 text-black border-green-400"
                 >
-                  <Grid className="w-4 h-4" />
+                  <Grid3x3 className="w-4 h-4" />
                 </Button>
                 <Button
                   variant={viewMode === "list" ? "default" : "outline"}
@@ -233,7 +233,7 @@ export default function EvolveLab() {
                   onClick={() => setViewMode("list")}
                   className="bg-green-400 hover:bg-green-500 text-black border-green-400"
                 >
-                  <List className="w-4 h-4" />
+                  <ListIcon className="w-4 h-4" />
                 </Button>
               </div>
             </div>

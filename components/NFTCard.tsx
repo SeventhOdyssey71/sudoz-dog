@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { useSignAndExecuteTransaction, useSuiClient, useCurrentAccount } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { CONTRACT_CONSTANTS, REVENUE_CONFIG } from '@/constants/contract';
@@ -182,19 +183,10 @@ export function NFTCard({ nft }: NFTCardProps) {
         earrings: traitsMap.get('earrings') || 'Unknown',
       };
       
-      // Step 4: Show preview and evolution type selection
-      const evolutionType = confirm(
-        `Evolve "${metadata.name}" with these traits:\n\n` +
-        `• Background: ${traits.background}\n` +
-        `• Skin: ${traits.skin}\n` +
-        `• Clothes: ${traits.clothes}\n\n` +
-        `Choose evolution type:\n` +
-        `✅ OK = KIOSK EVOLUTION (Marketplace Ready + Royalties)\n` +
-        `❌ Cancel = BASIC EVOLUTION (Simple Transfer)\n\n` +
-        `Kiosk evolution locks NFT for trading. Basic evolution gives you the NFT directly.`
-      );
+      // Step 4: Default to Kiosk Evolution (marketplace ready)
+      const evolutionType = true; // Always use Kiosk Evolution
       
-      // Step 5: Execute evolution transaction based on user choice
+      // Step 5: Execute evolution transaction
       const tx = new Transaction();
       
       if (evolutionType) {
@@ -331,10 +323,13 @@ export function NFTCard({ nft }: NFTCardProps) {
               </div>
             )}
             {nft.imageUrl ? (
-              <img
+              <Image
                 src={nft.imageUrl}
                 alt={nft.name}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-300"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                unoptimized
                 onError={(e) => {
                   // Fallback to a default image on error
                   const target = e.target as HTMLImageElement;

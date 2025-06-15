@@ -1,16 +1,32 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { useNFTs } from '@/hooks/use-nfts';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, ExternalLink, Loader2 } from 'lucide-react';
+import { Sparkles, ExternalLinkIcon, Loader2 } from 'lucide-react';
 import { CONTRACT_CONSTANTS } from '@/constants/contract';
 
 export function EvolvedNFTList() {
   const account = useCurrentAccount();
   const { evolvedNFTs, loading, error, refetch } = useNFTs();
+
+  // Preload images for better performance
+  useEffect(() => {
+    if (evolvedNFTs.length > 0) {
+      evolvedNFTs.forEach((nft) => {
+        if (nft.imageUrl) {
+          const img = new window.Image();
+          img.src = nft.imageUrl;
+          // Also preload fallback
+          const fallbackImg = new window.Image();
+          fallbackImg.src = nft.imageUrl.replace('.png', '.webp');
+        }
+      });
+    }
+  }, [evolvedNFTs]);
 
   // Listen for NFT update events
   useEffect(() => {
@@ -29,9 +45,22 @@ export function EvolvedNFTList() {
 
   if (loading) {
     return (
-      <div className="text-center py-12">
-        <Loader2 className="w-8 h-8 text-purple-400 animate-spin mx-auto mb-4" />
-        <p className="text-gray-400">Loading evolved NFTs...</p>
+      <div className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, index) => (
+            <Card key={index} className="bg-black/80 border-purple-400/20 overflow-hidden animate-pulse">
+              <div className="aspect-square bg-gray-800/50" />
+              <CardContent className="p-6">
+                <div className="h-6 bg-gray-700/50 rounded mb-4" />
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-700/50 rounded" />
+                  <div className="h-4 bg-gray-700/50 rounded" />
+                  <div className="h-4 bg-gray-700/50 rounded" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
@@ -39,7 +68,13 @@ export function EvolvedNFTList() {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-400">Error loading evolved NFTs: {error}</p>
+        <p className="text-red-400 mb-4">Error loading evolved NFTs: {error}</p>
+        <button
+          onClick={() => refetch()}
+          className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
@@ -64,7 +99,7 @@ export function EvolvedNFTList() {
   return (
     <div className="mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {evolvedNFTs.map((nft) => {
+        {evolvedNFTs.map((nft, index) => {
           const objectId = nft.objectId;
           
           const name = nft.name;
@@ -89,15 +124,29 @@ export function EvolvedNFTList() {
                   className="block w-full h-full"
                 >
                   {imageUrl ? (
-                    <img
+                    <Image
                       src={imageUrl}
                       alt={name}
-                      className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+                      fill
+                      className="object-cover hover:opacity-90 transition-opacity"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      priority={index < 4} // Load first 4 images with priority
+                      loading={index < 4 ? "eager" : "lazy"}
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                      unoptimized
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null;
-                        // Try PNG version as fallback
-                        target.src = imageUrl.replace('.webp', '.png');
+                        // Try different extensions as fallback
+                        if (imageUrl.includes('.png')) {
+                          target.src = imageUrl.replace('.png', '.webp');
+                        } else if (imageUrl.includes('.webp')) {
+                          target.src = imageUrl.replace('.webp', '.jpg');
+                        } else {
+                          // Final fallback
+                          target.src = '/images/sudoz-purple.png';
+                        }
                       }}
                     />
                   ) : (
@@ -115,7 +164,7 @@ export function EvolvedNFTList() {
                   rel="noopener noreferrer"
                   className="absolute bottom-3 right-3 bg-black/80 p-2 rounded-lg hover:bg-black transition-colors"
                 >
-                  <ExternalLink className="w-4 h-4 text-purple-400" />
+                  <ExternalLinkIcon className="w-4 h-4 text-purple-400" />
                 </a>
               </div>
               

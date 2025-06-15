@@ -20,10 +20,6 @@ export interface NFTData {
   type: 'artifact' | 'evolved';
 }
 
-// Simple in-memory cache for API responses
-const apiCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 60000; // 1 minute cache
-
 export function useNFTs() {
   const [artifacts, setArtifacts] = useState<NFTData[]>([]);
   const [evolvedNFTs, setEvolvedNFTs] = useState<NFTData[]>([]);
@@ -75,29 +71,21 @@ export function useNFTs() {
     }
   };
 
-  // Fetch evolved NFTs ONLY from kiosks using BlockVision v2 API
+  // Enhanced function to fetch evolved NFTs using BlockVision v2 API
   const fetchEvolvedNFTsWithKiosk = async (walletAddress: string) => {
-    console.log('Fetching evolved NFTs from kiosks for wallet:', walletAddress);
+    console.log('Fetching evolved NFTs including kiosk NFTs for wallet:', walletAddress);
     
     try {
-      // Initialize array to hold NFT objects from kiosks
+      // Initialize array to hold NFT objects from all sources
       let allEvolvedNfts: any[] = [];
       
-      // Check cache first
-      const cacheKey = `evolved-kiosk-${walletAddress}`;
-      const cached = apiCache.get(cacheKey);
-      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        console.log('Using cached BlockVision data');
-        return cached.data;
-      }
-      
-      // Use BlockVision v2 API to fetch NFTs in kiosks
+      // 1. Try BlockVision v2 API for kiosk NFTs
       try {
         const url = new URL('https://api.blockvision.org/v2/sui/account/nfts');
         url.searchParams.append('account', walletAddress);
         url.searchParams.append('type', 'kiosk'); // Specifically request kiosk NFTs
         url.searchParams.append('pageIndex', '1');
-        url.searchParams.append('pageSize', '100'); // Increased page size
+        url.searchParams.append('pageSize', '50');
         
         const headers = {
           'accept': 'application/json',
@@ -105,7 +93,7 @@ export function useNFTs() {
         };
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased timeout
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         
         const response = await fetch(url.toString(), { 
           headers,
@@ -119,95 +107,106 @@ export function useNFTs() {
           
           if (result.code === 200) {
             const nfts = result.result?.data || [];
-            console.log(`BlockVision v2: Found ${nfts.length} total NFTs in kiosks`);
+            console.log(`BlockVision v2: Found ${nfts.length} NFTs in kiosks`);
             
             // Filter for evolved SUDOZ NFTs
             const evolvedKioskNfts = nfts.filter((nft: any) => 
               nft.collection && (
                 nft.collection === CONTRACT_CONSTANTS.TYPES.EVOLVED_SUDOZ ||
                 nft.collection.includes('evolved_sudoz') ||
-                nft.collection.includes('EvolvedSudoz') ||
-                nft.collection.includes(CONTRACT_CONSTANTS.PACKAGE_ID)
+                nft.collection.includes('EvolvedSudoz')
               )
             );
             
             console.log(`Found ${evolvedKioskNfts.length} evolved SUDOZ NFTs in kiosks`);
             
-            // Batch fetch all NFT details in parallel for better performance
-            const objectIds = evolvedKioskNfts.map(nft => nft.objectId);
-            console.log(`Fetching ${objectIds.length} evolved NFTs in parallel...`);
-            
-            try {
-              // Use multiGetObjects for batch fetching
-              const objectsData = await client.multiGetObjects({
-                ids: objectIds,
-                options: {
-                  showContent: true,
-                  showDisplay: true,
-                  showType: true,
-                }
-              });
-              
-              // Process the results
-              objectsData.forEach((objectData, index) => {
+            // Fetch full details for each kiosk NFT
+            for (const nft of evolvedKioskNfts) {
+              try {
+                const objectData = await client.getObject({
+                  id: nft.objectId,
+                  options: {
+                    showContent: true,
+                    showDisplay: true,
+                    showType: true,
+                  }
+                });
+                
                 if (objectData.data) {
-                  const kioskNft = evolvedKioskNfts[index];
                   // Add kiosk info to the object
-                  objectData.data.kioskId = kioskNft.kioskId;
+                  objectData.data.kioskId = nft.kioskId;
                   objectData.data.isInKiosk = true;
                   allEvolvedNfts.push(objectData);
-                  
-                  console.log('Added evolved NFT from kiosk:', {
-                    objectId: objectData.data.objectId,
-                    kioskId: kioskNft.kioskId,
-                    collection: kioskNft.collection
-                  });
                 }
-              });
-            } catch (err) {
-              console.error('Error batch fetching NFT details:', err);
-              // Fallback to individual fetching if batch fails
-              for (const nft of evolvedKioskNfts) {
-                try {
-                  const objectData = await client.getObject({
-                    id: nft.objectId,
-                    options: {
-                      showContent: true,
-                      showDisplay: true,
-                      showType: true,
-                    }
-                  });
-                  
-                  if (objectData.data) {
-                    objectData.data.kioskId = nft.kioskId;
-                    objectData.data.isInKiosk = true;
-                    allEvolvedNfts.push(objectData);
-                  }
-                } catch (err) {
-                  console.error('Error fetching individual NFT:', err);
-                }
+              } catch (err) {
+                console.error('Error fetching kiosk NFT details:', err);
               }
             }
-          } else {
-            console.error('BlockVision API returned error code:', result.code, result.message);
           }
-        } else {
-          console.error('BlockVision API request failed:', response.status, response.statusText);
         }
       } catch (blockVisionError) {
         console.error('BlockVision v2 API error:', blockVisionError);
-        // Return empty array if API fails
-        return [];
+        // Continue with other methods
       }
       
-      console.log(`Total evolved NFTs found in kiosks: ${allEvolvedNfts.length}`);
-      
-      // Cache the results
-      if (allEvolvedNfts.length > 0) {
-        apiCache.set(cacheKey, { data: allEvolvedNfts, timestamp: Date.now() });
+      // 2. Direct ownership query for evolved NFTs
+      try {
+        const directEvolved = await client.getOwnedObjects({
+          owner: walletAddress,
+          filter: {
+            StructType: CONTRACT_CONSTANTS.TYPES.EVOLVED_SUDOZ,
+          },
+          options: {
+            showContent: true,
+            showDisplay: true,
+            showType: true,
+          },
+        });
+        
+        console.log('Direct evolved NFTs found:', directEvolved.data.length);
+        allEvolvedNfts = [...allEvolvedNfts, ...directEvolved.data];
+      } catch (error) {
+        console.error('Error fetching direct evolved NFTs:', error);
       }
       
-      return allEvolvedNfts;
+      // 3. Alternative type format query
+      try {
+        const altEvolved = await client.getOwnedObjects({
+          owner: walletAddress,
+          filter: {
+            MatchAll: [
+              {
+                StructType: `${CONTRACT_CONSTANTS.PACKAGE_ID}::evolved_sudoz::EvolvedSudoz`,
+              },
+            ],
+          },
+          options: {
+            showContent: true,
+            showDisplay: true,
+            showType: true,
+          },
+        });
+        
+        console.log('Alternative query evolved NFTs found:', altEvolved.data.length);
+        
+        // Add only unique NFTs
+        const existingIds = new Set(allEvolvedNfts.map(nft => nft.data?.objectId));
+        for (const nft of altEvolved.data) {
+          if (!existingIds.has(nft.data?.objectId)) {
+            allEvolvedNfts.push(nft);
+          }
+        }
+      } catch (error) {
+        console.error('Error in alternative evolved NFT query:', error);
+      }
+      
+      // Remove duplicates
+      const uniqueNfts = allEvolvedNfts.filter((nft, index, self) => 
+        index === self.findIndex(n => n.data?.objectId === nft.data?.objectId)
+      );
+      
+      console.log(`Total unique evolved NFTs found: ${uniqueNfts.length}`);
+      return uniqueNfts;
       
     } catch (error) {
       console.error('Error in fetchEvolvedNFTsWithKiosk:', error);
@@ -268,12 +267,145 @@ export function useNFTs() {
         console.log('BlockVision API response:', blockVisionData);
       }
       
-      // Fetch evolved NFTs only from kiosks using BlockVision API
+      // Use the enhanced evolved NFT fetching method that includes kiosk NFTs
       const allEvolvedNfts = await fetchEvolvedNFTsWithKiosk(account.address);
-      console.log(`Total evolved NFTs found in kiosks: ${allEvolvedNfts.length}`);
+      console.log(`Total evolved NFTs found (including kiosks): ${allEvolvedNfts.length}`);
       
       // Legacy BlockVision v1 data is no longer used for evolved NFTs
       // The enhanced fetchEvolvedNFTsWithKiosk function handles all evolved NFT fetching
+        try {
+          // Get dynamic fields of the kiosk (items stored in kiosk)
+          let dynamicFields;
+          try {
+            dynamicFields = await client.getDynamicFields({
+              parentId: kiosk.kioskId,
+              limit: 50, // Increase limit to get more items
+            });
+          } catch (fieldError) {
+            console.error(`Failed to get dynamic fields for kiosk ${kiosk.kioskId}:`, fieldError);
+            continue;
+          }
+          
+          console.log(`Kiosk ${kiosk.kioskId} dynamic fields:`, dynamicFields.data.length);
+          
+          // Log field types for debugging
+          if (dynamicFields.data.length > 0) {
+            console.log('Sample field types:', dynamicFields.data.slice(0, 3).map(f => ({
+              name: f.name,
+              type: f.objectType,
+            })));
+          }
+          
+          // Fetch each item in the kiosk
+          for (const field of dynamicFields.data) {
+            try {
+              const fieldType = field.objectType || '';
+              
+              // Check if this is a kiosk item
+              if (fieldType.includes('0x2::dynamic_field::Field')) {
+                const itemData = await client.getDynamicFieldObject({
+                  parentId: kiosk.kioskId,
+                  name: field.name,
+                });
+                
+                if (itemData.data?.content?.dataType === 'moveObject') {
+                  const content = itemData.data.content as any;
+                  
+                  // Check both the item field type and the value type
+                  const itemType = content.fields?.value?.type || '';
+                  const itemFields = content.fields?.value?.fields || {};
+                  
+                  // Also check if the name indicates this is a kiosk item
+                  const nameType = typeof field.name === 'object' ? field.name.type : '';
+                  const isKioskItem = content.fields?.name?.type?.includes('0x2::kiosk::Item');
+                  
+                  // Check the actual value for evolved NFT
+                  const valueFields = content.fields?.value?.fields || {};
+                  
+                  // Log for debugging
+                  if (isKioskItem || itemType.includes(CONTRACT_CONSTANTS.PACKAGE_ID) || valueFields.metadata_id) {
+                    console.log('Potential evolved NFT in kiosk:', {
+                      fieldObjectId: field.objectId,
+                      isKioskItem,
+                      nameType,
+                      itemType,
+                      hasValueFields: !!valueFields,
+                      valueFieldKeys: Object.keys(valueFields),
+                      metadata_id: valueFields.metadata_id,
+                      number: valueFields.number,
+                    });
+                  }
+                  
+                  // Check if this is an evolved NFT by multiple conditions
+                  const isEvolvedNFT = (
+                    // Check if it's a kiosk item with evolved NFT
+                    (isKioskItem && itemType.includes(CONTRACT_CONSTANTS.PACKAGE_ID) && itemType.includes('EvolvedSudoz')) ||
+                    // Check the item type includes our package and module
+                    (itemType.includes(CONTRACT_CONSTANTS.PACKAGE_ID) && itemType.includes('evolved_sudoz::EvolvedSudoz')) ||
+                    // Or check if the name type indicates it's an evolved NFT
+                    (nameType && nameType.includes(CONTRACT_CONSTANTS.PACKAGE_ID) && nameType.includes('evolved_sudoz::EvolvedSudoz')) ||
+                    // Or check if it has the expected fields
+                    (itemFields.metadata_id && itemFields.number !== undefined) ||
+                    // Also check if the value fields indicate evolved NFT
+                    (valueFields.metadata_id && valueFields.number !== undefined)
+                  );
+                  
+                  if (isEvolvedNFT) {
+                    
+                    console.log('Found evolved NFT in kiosk:', {
+                      type: itemType,
+                      nameType,
+                      number: itemFields.number,
+                      metadata_id: itemFields.metadata_id,
+                    });
+                    
+                    // The value field contains the actual NFT data
+                    const evolvedNftFields = valueFields;
+                    if (evolvedNftFields && (evolvedNftFields.number !== undefined || evolvedNftFields.metadata_id)) {
+                      // Create a proper object structure that matches the direct ownership format
+                      const nftObject = {
+                        data: {
+                          objectId: field.objectId || itemData.data?.objectId,
+                          content: {
+                            dataType: 'moveObject',
+                            type: itemType,
+                            fields: evolvedNftFields,
+                            hasPublicTransfer: false,
+                          },
+                          display: {
+                            data: {
+                              name: evolvedNftFields.name || `THE SUDOZ #${evolvedNftFields.number}`,
+                              image_url: evolvedNftFields.image_url || '',
+                              description: evolvedNftFields.description || '',
+                            }
+                          },
+                          owner: {
+                            ObjectOwner: kiosk.kioskId
+                          },
+                          type: itemType,
+                        }
+                      };
+                      
+                      kioskEvolvedNfts.push(nftObject);
+                      console.log('Added evolved NFT from kiosk:', {
+                        objectId: nftObject.data.objectId,
+                        number: evolvedNftFields.number,
+                        metadataId: evolvedNftFields.metadata_id,
+                      });
+                    }
+                  }
+                }
+              }
+            } catch (err) {
+              console.error('Error fetching kiosk item:', err);
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching kiosk dynamic fields:', err);
+        }
+      }
+      
+
       // Parse artifacts
       const parsedArtifacts: NFTData[] = artifactsResponse.data
         .map((nft) => {
@@ -328,28 +460,14 @@ export function useNFTs() {
           const content = nft.data.content.fields as any;
           const display = nft.data.display?.data || {};
           
-          // More detailed logging to debug the structure
-          console.log('Evolved NFT full data:', {
-            objectId: nft.data.objectId,
-            type: nft.data.type,
-            content: content,
-            display: display,
-            hasContent: !!content,
-            contentKeys: Object.keys(content || {}),
-            displayKeys: Object.keys(display || {}),
-          });
-          
           let imageUrl = display.image_url || content.image_url || '';
-          const metadataId = content.metadata_id || content.metadataId || content.metadata || '';
-          const number = content.number || content.id || '';
+          const metadataId = content.metadata_id || '';
           
           // Debug logging for evolved NFTs
           console.log('Processing evolved NFT:', {
             objectId: nft.data.objectId,
             hasDisplay: !!display.image_url,
             metadataId,
-            number,
-            imageUrl,
             contentFields: Object.keys(content || {}),
           });
           
@@ -359,21 +477,22 @@ export function useNFTs() {
             imageUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
           }
           
-          // Deterministic image URL construction for evolved NFTs
-          if (!imageUrl || imageUrl.includes('placeholder')) {
-            // Use number as primary identifier (most reliable)
-            const identifier = number || metadataId || '';
-            if (identifier) {
-              // Ensure 4-digit padding for consistency
-              const paddedId = identifier.toString().padStart(4, '0');
-              imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${paddedId}.png`;
-            }
+          // For evolved NFTs, construct the proper image URL using metadata_id
+          if (metadataId) {
+            // Use the WebP version of evolved NFTs with the correct IPFS hash
+            imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${metadataId}.webp`;
+            console.log('Constructed evolved image URL:', imageUrl);
           }
           
-          // Final fallback: use a placeholder if still no image
-          if (!imageUrl) {
-            console.warn('No image URL found for evolved NFT:', nft.data.objectId);
-            imageUrl = '/images/sudoz-purple.png'; // Use purple variant as placeholder
+          // Fallback: if still no proper image and it's a placeholder
+          if (imageUrl.includes('placeholder.webp') && metadataId) {
+            imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${metadataId}.webp`;
+          }
+          
+          // Additional fallback: Try to construct URL from number if no metadata_id
+          if (!imageUrl && content.number) {
+            const paddedNumber = content.number.toString().padStart(4, '0');
+            imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${paddedNumber}.webp`;
           }
           
           const parsedName = display.name || content.name || `THE SUDOZ #${content.number || 'Unknown'}`;
@@ -408,9 +527,13 @@ export function useNFTs() {
         artifacts: parsedArtifacts.length,
         evolved: parsedEvolved.length,
         account: account.address,
+        directEvolvedCount: evolvedResponse.data.length,
+        altQueryEvolvedCount: evolvedResponse2.data.length,
+        kioskEvolvedCount: kioskEvolvedNfts.length,
         totalEvolvedCount: allEvolvedNfts.length,
         evolvedType: CONTRACT_CONSTANTS.TYPES.EVOLVED_SUDOZ,
         blockVisionData: blockVisionData?.result?.length || 0,
+        userKiosks: userKiosks.length,
       });
     } catch (err: any) {
       console.error('Error fetching NFTs:', err);

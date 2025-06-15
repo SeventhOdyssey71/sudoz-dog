@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import { useCurrentAccount, useSuiClientQuery } from '@mysten/dapp-kit';
 import { CONTRACT_CONSTANTS } from '@/constants/contract';
 import { Card, CardContent } from '@/components/ui/card';
@@ -110,10 +111,15 @@ export function EvolvedNFTDisplay() {
             imageUrl = `https://gateway.pinata.cloud/ipfs/${ipfsHash}`;
           }
           
-          // For evolved NFTs, construct the actual URL
-          if (metadataId) {
-            // Use the WebP version of evolved NFTs
-            imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${metadataId}.webp`;
+          // For evolved NFTs, try multiple approaches to get the image
+          if (!imageUrl || imageUrl.includes('placeholder')) {
+            if (metadataId) {
+              // Use PNG version which seems more reliable
+              imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${metadataId}.png`;
+            } else if (number) {
+              const paddedNumber = number.toString().padStart(4, '0');
+              imageUrl = `https://plum-defeated-leopon-866.mypinata.cloud/ipfs/bafybeic7kknhjbvdrrkzlthi7zvqg7ilxeeckcq3d7y54qv3xngiw2pjui/nfts/${paddedNumber}.png`;
+            }
           }
           
           return (
@@ -126,15 +132,25 @@ export function EvolvedNFTDisplay() {
                   className="block w-full h-full"
                 >
                   {imageUrl ? (
-                    <img
+                    <Image
                       src={imageUrl}
                       alt={name}
-                      className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+                      fill
+                      className="object-cover hover:opacity-90 transition-opacity"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      unoptimized
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null;
-                        // Try PNG version as fallback
-                        target.src = imageUrl.replace('.webp', '.png');
+                        // Try different extensions as fallback
+                        if (imageUrl.includes('.png')) {
+                          target.src = imageUrl.replace('.png', '.webp');
+                        } else if (imageUrl.includes('.webp')) {
+                          target.src = imageUrl.replace('.webp', '.jpg');
+                        } else {
+                          // Final fallback
+                          target.src = '/images/sudoz-purple.png';
+                        }
                       }}
                     />
                   ) : (
