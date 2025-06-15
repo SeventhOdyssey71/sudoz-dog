@@ -200,14 +200,7 @@ export function PoolStats() {
               <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
                 <h4 className="text-sm font-bold text-gray-400 mb-2">UPGRADE FEES</h4>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Founder (85%)</span>
-                    <span className="text-sm font-mono text-orange-400">{REVENUE_CONFIG.FOUNDER_PERCENTAGE}%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Developer (15%)</span>
-                    <span className="text-sm font-mono text-cyan-400">{REVENUE_CONFIG.DEV_PERCENTAGE}%</span>
-                  </div>
+                  
                 </div>
               </div>
               <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">

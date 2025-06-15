@@ -66,9 +66,7 @@ export function NFTCard({ nft }: NFTCardProps) {
         description: (
           <div className="space-y-1">
             <p>{nft.name} is now level {nft.level + 1}</p>
-            <p className="text-xs opacity-80">
-              Pool contributions: {founderContribution.toFixed(2)} SUI (Founder) | {devContribution.toFixed(2)} SUI (Dev)
-            </p>
+          
           </div>
         ),
       });
@@ -117,19 +115,7 @@ export function NFTCard({ nft }: NFTCardProps) {
       // Trigger a refetch immediately
       window.dispatchEvent(new Event('nft-updated'));
       
-      toast.success('NFT upgraded successfully!', {
-        description: (
-          <div className="space-y-1">
-            <p>{nft.name} is now level {targetLevel}</p>
-            <p className="text-xs opacity-80">
-              Total paid: {totalPaidBulk} SUI ({levelsDone} levels)
-            </p>
-            <p className="text-xs opacity-80">
-              Pool contributions: {founderContributionBulk.toFixed(2)} SUI (Founder) | {devContributionBulk.toFixed(2)} SUI (Dev)
-            </p>
-          </div>
-        ),
-      });
+   
     } catch (error) {
       console.error('Bulk upgrade failed:', error);
       toast.error('Upgrade failed', {
