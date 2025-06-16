@@ -268,9 +268,11 @@ export function NFTCard({ nft }: NFTCardProps) {
         // Wait for video to play before executing transaction
         await new Promise(resolve => setTimeout(resolve, 3000));
         
-        const result = await signAndExecute({
+        const evolutionResult = await signAndExecute({
           transaction: tx,
         });
+        
+        console.log('Evolution successful:', evolutionResult);
       } else {
         // Basic Evolution (simple transfer) - not used in current implementation
         const tx = new Transaction();
@@ -299,12 +301,13 @@ export function NFTCard({ nft }: NFTCardProps) {
         // Wait for video to play before executing transaction
         await new Promise(resolve => setTimeout(resolve, 3000));
         
-        const result = await signAndExecute({
+        const evolutionResult = await signAndExecute({
           transaction: tx,
         });
+        
+        console.log('Evolution successful:', evolutionResult);
       }
-
-      console.log('Evolution successful:', result);
+      
       console.log('Evolved to metadata ID:', selectedMetadataId);
       
       // Trigger multiple refreshes to ensure the evolved NFT is detected
