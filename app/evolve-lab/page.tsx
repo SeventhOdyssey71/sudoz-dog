@@ -16,6 +16,7 @@ import { useNFTs } from "@/hooks/use-nfts";
 import { NFTCard } from "@/components/NFTCard";
 import { EvolvedStats } from "@/components/EvolvedStats";
 import { EvolvedNFTList } from "@/components/EvolvedNFTList";
+import { ClaimPool } from "@/components/ClaimPool";
 
 export default function EvolveLab() {
   const account = useCurrentAccount();
@@ -161,22 +162,38 @@ export default function EvolveLab() {
 
         {/* No NFTs State */}
         {!loading && !error && totalNFTs === 0 && (
-          <div className="text-center py-12">
-            <FlaskConical className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-white mb-2">NO SPECIMENS DETECTED</h3>
-            <p className="text-gray-400 mb-6">
-              No SUDOZ artifacts found in your laboratory. Acquire artifacts to begin genetic experiments.
-            </p>
-            <a 
-              href="https://www.tradeport.xyz/sui/collection/0x5c67326d96aa593599722a174b1f358036f3b6ee3a42eccf3065aa02d9ecc666::sudoz_artifacts_v2::SudozArtifact?tab=items&bottomTab=trades"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button className="bg-green-400 hover:bg-green-500 text-black">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                EXPLORE COLLECTION
-              </Button>
-            </a>
+          <div className="space-y-12 py-12">
+            <div className="text-center">
+              <FlaskConical className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-white mb-2">NO SPECIMENS DETECTED</h3>
+              <p className="text-gray-400 mb-6">
+                No SUDOZ artifacts found in your laboratory. Claim a free artifact or explore the collection.
+              </p>
+            </div>
+
+            {/* Claim Pool Section */}
+            <ClaimPool onClaimSuccess={refetch} />
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 max-w-2xl mx-auto">
+              <div className="flex-1 h-px bg-gray-700"></div>
+              <span className="text-gray-500 text-sm uppercase tracking-wider">or</span>
+              <div className="flex-1 h-px bg-gray-700"></div>
+            </div>
+
+            {/* Marketplace Link */}
+            <div className="text-center">
+              <a 
+                href="https://www.tradeport.xyz/sui/collection/0x5c67326d96aa593599722a174b1f358036f3b6ee3a42eccf3065aa02d9ecc666::sudoz_artifacts_v2::SudozArtifact?tab=items&bottomTab=trades"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-green-400 hover:bg-green-500 text-black">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  EXPLORE COLLECTION ON MARKETPLACE
+                </Button>
+              </a>
+            </div>
           </div>
         )}
 

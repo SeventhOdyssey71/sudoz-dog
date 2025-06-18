@@ -18,6 +18,7 @@ export const CONTRACT_CONSTANTS = {
   RANDOM_OBJECT_ID: '0x8',
   MODULE_NAME: 'sudoz_artifacts_v2',
   EVOLVED_MODULE_NAME: 'evolved_sudoz',
+  CLAIM_POOL_MODULE_NAME: 'claim_pool',
   
   // EVOLVED SUDOZ Contract IDs - MAINNET
   EVOLVED_ADMIN_CAP_ID: '0xe44533f1edf53af5f8badb6fbedb6ec751e70b935997f264414a931a5d82d5a7', // Dev EvolvedAdminCap
@@ -26,6 +27,9 @@ export const CONTRACT_CONSTANTS = {
   TRANSFER_POLICY_ID: '0x42fee34d5e843199096ae25d571a14eb4907000fdd431de45387b9cb21ca3452', // TransferPolicy
   TRANSFER_POLICY_CAP_ID: '0x41fa50d362073d1baf03267647e9c8cfcc5460f7aef1435a9d26d9c882694405', // TransferPolicyCap
   EVOLUTION_AUTH_ID: '0xdb95f7f4d0d7ac124eb9633fd0bbb664c9193ab93ae78074580aed311ce9c53d', // EvolutionAuth
+  
+  // Claim Pool - Add your claim pool ID here after deployment
+  CLAIM_POOL_ID: '', // To be filled after claim pool deployment
   
   // Revenue configuration
   REVENUE_CONFIG: REVENUE_CONFIG,
