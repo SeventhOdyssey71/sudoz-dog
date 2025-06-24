@@ -440,7 +440,7 @@ export function ClaimPool({ onClaimSuccess }: ClaimPoolProps) {
                       >
                         {eligibleNfts.map((nft) => (
                           <option key={nft.objectId} value={nft.objectId}>
-                            {nft.name} ({nft.type === 'prime' ? 'Prime Machin' : 'Rootlet'})
+                            {nft.name} ({nft.type === 'prime' ? 'Prime Machin' : 'IKACHAN PFP'})
                           </option>
                         ))}
                       </select>
@@ -462,7 +462,7 @@ export function ClaimPool({ onClaimSuccess }: ClaimPoolProps) {
                     ❌ No eligible NFTs found
                   </p>
                   <p className="text-xs text-gray-400 mt-2">
-                    You need to own Prime Machin or Rootlet NFTs to claim from this pool.
+                    You need to own Prime Machin or IKACHAN PFP NFTs to claim from this pool.
                   </p>
                 </div>
               )}

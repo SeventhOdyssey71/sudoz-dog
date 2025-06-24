@@ -36,13 +36,15 @@ const VaultPage = () => {
 
         <div className="grid md:grid-cols-3 gap-8 w-full max-w-5xl">
           {/* Holder Giveaways */}
-          <div className="bg-gradient-to-br from-green-900/60 to-gray-900/80 border-2 border-green-400/30 rounded-2xl p-6 shadow-lg hover:shadow-green-400/30 transition-all duration-300 group relative overflow-hidden">
-            <Gift className="w-12 h-12 text-green-400 mb-4 mx-auto animate-bounce" />
-            <h2 className="text-xl md:text-2xl font-bold text-green-300 mb-2 tracking-wide text-center">Holder Giveaways</h2>
-            <p className="text-gray-300 text-center mb-4">Participate in exclusive giveaways for SUDOZ holders. Prizes, NFTs, and more await!</p>
-            <Button className="w-full bg-gray-600 hover:bg-gray-600 text-gray-400 font-bold cursor-not-allowed" disabled>Coming Soon</Button>
-            <div className="absolute -top-8 -right-8 w-24 h-24 bg-green-400/10 rounded-full blur-2xl animate-pulse" />
-          </div>
+          <Link href="/vault/giveaway" className="block">
+            <div className="bg-gradient-to-br from-green-900/60 to-gray-900/80 border-2 border-green-400/30 rounded-2xl p-6 shadow-lg hover:shadow-green-400/30 transition-all duration-300 group relative overflow-hidden cursor-pointer hover:border-green-400/50">
+              <Gift className="w-12 h-12 text-green-400 mb-4 mx-auto animate-bounce" />
+              <h2 className="text-xl md:text-2xl font-bold text-green-300 mb-2 tracking-wide text-center">Holder Giveaways</h2>
+              <p className="text-gray-300 text-center mb-4">Participate in exclusive giveaways for SUDOZ holders. Prizes, NFTs, and more await!</p>
+              <Button className="w-full bg-green-500 hover:bg-green-600 text-black font-bold">Enter Giveaways</Button>
+              <div className="absolute -top-8 -right-8 w-24 h-24 bg-green-400/10 rounded-full blur-2xl animate-pulse" />
+            </div>
+          </Link>
 
           {/* Raffles */}
           <div className="bg-gradient-to-br from-purple-900/60 to-gray-900/80 border-2 border-purple-400/30 rounded-2xl p-6 shadow-lg hover:shadow-purple-400/30 transition-all duration-300 group relative overflow-hidden">
@@ -54,13 +56,15 @@ const VaultPage = () => {
           </div>
 
           {/* Sacrifice System (Burn & Chances) */}
-          <div className="bg-gradient-to-br from-red-900/60 to-gray-900/80 border-2 border-red-400/30 rounded-2xl p-6 shadow-lg hover:shadow-red-400/30 transition-all duration-300 group relative overflow-hidden">
-            <Flame className="w-12 h-12 text-red-400 mb-4 mx-auto animate-bounce" />
-            <h2 className="text-xl md:text-2xl font-bold text-red-300 mb-2 tracking-wide text-center">Sacrifice System</h2>
-            <p className="text-gray-300 text-center mb-4">Burn your SUDOZ for a chance at legendary rewards. High risk, high reward!</p>
-            <Button className="w-full bg-gray-600 hover:bg-gray-600 text-gray-400 font-bold cursor-not-allowed" disabled>Coming Soon</Button>
-            <div className="absolute top-1/2 right-0 w-24 h-24 bg-red-400/10 rounded-full blur-2xl animate-pulse" />
-          </div>
+          <Link href="/vault/burn" className="block">
+            <div className="bg-gradient-to-br from-red-900/60 to-gray-900/80 border-2 border-red-400/30 rounded-2xl p-6 shadow-lg hover:shadow-red-400/30 transition-all duration-300 group relative overflow-hidden cursor-pointer hover:border-red-400/50">
+              <Flame className="w-12 h-12 text-red-400 mb-4 mx-auto animate-bounce" />
+              <h2 className="text-xl md:text-2xl font-bold text-red-300 mb-2 tracking-wide text-center">Sacrifice System</h2>
+              <p className="text-gray-300 text-center mb-4">Burn your SUDOZ for a chance at legendary rewards. High risk, high reward!</p>
+              <Button className="w-full bg-red-500 hover:bg-red-600 text-white font-bold">Enter Sacrifice</Button>
+              <div className="absolute top-1/2 right-0 w-24 h-24 bg-red-400/10 rounded-full blur-2xl animate-pulse" />
+            </div>
+          </Link>
         </div>
       </div>
 
