@@ -29,7 +29,7 @@ export default function BurnPage() {
   const [burnedSpots, setBurnedSpots] = useState<any[]>([])
 
   // Filter only artifacts (not evolved SUDOZ)
-  const artifacts = nfts.filter(nft => 
+  const artifacts = (nfts || []).filter(nft => 
     nft.name?.includes('Artifact') || 
     (nft.level && nft.level < 10)
   )
